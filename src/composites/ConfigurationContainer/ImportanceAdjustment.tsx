@@ -21,12 +21,46 @@ import {
   Cross1Icon,
 } from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
+import * as Tabs from '@radix-ui/react-tabs';
 import "../Style/Dialog.css";
+import "./ImportanceAdjustment/AdjustmentTable/FigureContainer/Figure.css"
 // import { ProfileSelection } from "./ImportanceAdjustment/ProfileSelection";
 // import { AdjustmentTable } from "./ImportanceAdjustment/AdjustmentTable";
 import { AdjustmentTableLogic } from "./ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic";
 import ProfileSelectionLogic from "./ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic";
 import { Profile } from "../../types";
+import {PieContribution} from "./ImportanceAdjustment/AdjustmentTable/FigureContainer/Figures.tsx";
+
+
+
+
+export const TabsPanel = () =>{
+  return(
+    <Tabs.Root className="TabsRoot" defaultValue="tab1">
+      <Tabs.List className="TabsList" aria-label="Addditional details">
+        <Tabs.Trigger className="TabsTrigger" value="tab1">
+          Contributions
+        </Tabs.Trigger>
+        <Tabs.Trigger className="TabsTrigger" value="tab2">
+          Sensitivity
+        </Tabs.Trigger>
+        <Tabs.Trigger className="TabsTrigger" value="tab3">
+          Impacts
+        </Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content className="TabsContent" value="tab1">
+        <p className="Text">Provides Information about Contributions</p>
+        {/*<PieContribution/>*/}
+      </Tabs.Content>
+      <Tabs.Content className="TabsTrigger" value="tab2">
+        <p className="Text">Provides Information about sensitivity</p>
+      </Tabs.Content>
+      <Tabs.Content className="TabsTrigger" value="tab3">
+        <p className="Text">Provides Information about Impacts</p>
+      </Tabs.Content>
+    </Tabs.Root>
+  );
+}
 
 export const ImportanceAdjustment = () => {
   const [selectedProfile, setSelectedProfile] = useState<
@@ -115,13 +149,21 @@ export const ImportanceAdjustment = () => {
               <Separator my="3" size="4" />
 
               {/* show the adjustment table*/}
-              <AdjustmentTableLogic
-                selectedProfile={
-                  Array.isArray(selectedProfile) ? selectedProfile : undefined
-                }
-                isProfileApplied={isProfileApplied}
-                onResetApplied={handleReset}
-              />
+              <div className="Panels" style={{display:"grid", gridTemplateColumns: "repeat(2, 1fr)", gridGap:10}}>
+                <div className="Table">
+                  <AdjustmentTableLogic
+                      selectedProfile={
+                        Array.isArray(selectedProfile) ? selectedProfile : undefined
+                      }
+                      isProfileApplied={isProfileApplied}
+                      onResetApplied={handleReset}
+                  />
+                </div>
+                <div className="Visual">
+                  <TabsPanel/>
+                </div>
+              </div>
+
 
               {/* Move the close and download button here */}
 
