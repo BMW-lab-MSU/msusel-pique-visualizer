@@ -6,6 +6,9 @@ import { Profile } from "../../../../types";
 import * as schema from "../../../../data/schema";
 import { AdjustmentTableUI } from "./AdjustmentTableUI";
 
+import "./FigureContainer/Figure.css"
+import {TabsPanel} from "../ImportanceDashBoard/AdjustmentSummary.tsx";
+
 interface Weights {
   [key: string]: number;
 }
@@ -122,13 +125,24 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   };
 
   return (
-    <AdjustmentTableUI
-      dataset={dataset}
-      values={values}
-      recalculatedWeights={recalculatedWeights}
-      handleSliderChange={handleSliderChange}
-      resetAllAdjustments={resetAllAdjustments}
-      handleDownload={handleDownload}
-    />
+    <div className="Panels" style={{display:"grid", gridTemplateColumns: "repeat(2, 1fr)", gridGap:10}}>
+      <div className="Table">
+        <AdjustmentTableUI
+          dataset={dataset}
+          values={values}
+          recalculatedWeights={recalculatedWeights}
+          handleSliderChange={handleSliderChange}
+          resetAllAdjustments={resetAllAdjustments}
+          handleDownload={handleDownload}
+        />
+      </div>
+      <div className="Visual">
+        <TabsPanel
+          dataset={dataset}
+          values={values}
+          recalculatedWeights={recalculatedWeights}
+        />
+      </div>
+    </div>
   );
 };

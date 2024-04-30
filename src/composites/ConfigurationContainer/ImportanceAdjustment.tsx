@@ -21,20 +21,12 @@ import {
   Cross1Icon,
 } from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
-import * as Tabs from '@radix-ui/react-tabs';
 import "../Style/Dialog.css";
-import "./ImportanceAdjustment/AdjustmentTable/FigureContainer/Figure.css"
 // import { ProfileSelection } from "./ImportanceAdjustment/ProfileSelection";
 // import { AdjustmentTable } from "./ImportanceAdjustment/AdjustmentTable";
 import { AdjustmentTableLogic } from "./ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic";
 import ProfileSelectionLogic from "./ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic";
 import { Profile } from "../../types";
-import {PieContribution} from "./ImportanceAdjustment/AdjustmentTable/FigureContainer/Figures.tsx";
-
-import {TabsPanel} from "./ImportanceAdjustment/ImportanceDashBoard/AdjustmentSummary.tsx";
-
-
-
 export const ImportanceAdjustment = () => {
   const [selectedProfile, setSelectedProfile] = useState<
     Profile | Profile[] | null
@@ -122,21 +114,14 @@ export const ImportanceAdjustment = () => {
               <Separator my="3" size="4" />
 
               {/* show the adjustment table*/}
-              <div className="Panels" style={{display:"grid", gridTemplateColumns: "repeat(2, 1fr)", gridGap:10}}>
-                <div className="Table">
-                  <AdjustmentTableLogic
-                      selectedProfile={
-                        Array.isArray(selectedProfile) ? selectedProfile : undefined
-                      }
-                      isProfileApplied={isProfileApplied}
-                      onResetApplied={handleReset}
-                  />
-                </div>
-                <div className="Visual">
-                  <TabsPanel/>
-                </div>
-              </div>
 
+              <AdjustmentTableLogic
+                  selectedProfile={
+                    Array.isArray(selectedProfile) ? selectedProfile : undefined
+                  }
+                  isProfileApplied={isProfileApplied}
+                  onResetApplied={handleReset}
+              />
 
               {/* Move the close and download button here */}
 
