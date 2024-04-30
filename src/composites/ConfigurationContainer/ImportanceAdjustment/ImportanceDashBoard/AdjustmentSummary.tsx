@@ -1,16 +1,23 @@
-import { useAtomValue } from "jotai";
-import React, { useMemo, useState } from "react";
-import { State } from "../../../../state";
-import { Profile } from "../../../../types";
+//AdjustmentSummar.tsx
+
+
+import React, {useMemo, useState} from "react";
+import {State} from "../../../../state";
+import {Profile} from "../../../../types";
 import * as schema from "../../../../data/schema";
 import * as Tabs from "@radix-ui/react-tabs";
-import {divide, im, matrix, multiply} from "mathjs";
+import {divide, matrix, multiply} from "mathjs";
+import {stackOffsetWiggle} from "d3";
+
+import "./plotStyle.css"
+import {PieContribution} from "./Plots/AdjustementPlots.tsx";
+
 
 interface Weights {
     [key: string]: number;
 }
 
-interface ChildNodeValues {
+interface ChildchildNodeValues {
     [key: string]: number;
 }
 
@@ -58,6 +65,15 @@ function multVectors(a,b){
     return a.map((e,i) => e * b[i]);
 }
 
+/**
+ * Returns an array in order of sorted reference array
+ * https://stackoverflow.com/questions/46622486/what-is-the-javascript-equivalent-of-numpy-argsort
+ */
+function sortByArrayRefOrder (data, orderRefArr){
+    let orderedArr = [], i=0;
+    orderRefArr.map( o => { orderedArr[o-1] = data[i++]});
+    return orderedArr.reverse();
+}
 
 /***
  * Calculate the score according to the evaluator function
@@ -94,17 +110,16 @@ function calcDefaults(values, importance){
  *
  *  @returns {number} normalization coefficient.
  */
-function normalizer_calc(importance, fcnName){
+function normalizer_calc(importance: any[], fcnName: string){
     const n_importance = importance.length;
-    let normCoefficient = 1;
 
     let value_max = Array(n_importance).fill(1)
 
     if (fcnName === "defaults"){
-        normCoefficient = calcDefaults(value_max, importance)
+        return calcDefaults(value_max, importance)
+    }else {
+        return 1
     }
-
-    return normCoefficient
 }
 
 
@@ -125,92 +140,82 @@ function calcContribution(values, importance, normCoefficient, fcnName){
     return nodeContribution
 }
 
-export const TabsPanel : React.FC<AdjustmentTableProps> = ({
-       selectedProfile,
-       isProfileApplied,
-       onResetApplied,
+
+
+
+
+interface AdjustmentSummaryProps {
+    dataset: schema.base.Schema;
+    values: { [key: string]: number };
+    recalculatedWeights: { [key: string]: number };
+}
+
+export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
+       dataset,
+       values,
+       recalculatedWeights,
    }) =>{
 
-    const dataset = useAtomValue(State.dataset);
-    if (!dataset) return null;
+    const getInitialchildNodeValues = (dataset: schema.base.Schema): { [key: string]: number } => {
+        let values: ChildchildNodeValues={};
 
-    const getInitialWeights = (
-        selectedProfile: Profile[] | undefined,
-        dataset: schema.base.Schema,
-        useDataset: boolean
-    ): { [key: string]: number } => {
-        let weights: Weights = {};
-        if (selectedProfile && selectedProfile.length > 0 && !useDataset) {
-            const profileWeights = selectedProfile[0].importance;
-            weights = { ...profileWeights };
-        } else {
-            Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
-                const entry = tqiEntry as TQIEntry;
-                Object.entries(entry.weights).forEach(([aspect, importance]) => {
-                    weights[aspect] = importance;
-                });
+        //TODO : Make it generalize to work with each layer in pique
+
+        Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
+            const entry = tqiEntry as TQIEntry;
+            Object.entries(entry.weights).forEach(([aspect, _]) => {
+                values[aspect] = dataset.factors.quality_aspects[aspect]?.value || 0;
             });
-        }
-        return weights;
-    };
+        });
 
-    const getInitialNodeValues = (
-        selectedProfile: Profile[] | undefined,
-        dataset: schema.base.Schema,
-        useDataset: boolean
-    ): { [key: string]: number } => {
-        let values: ChildNodeValues={};
-
-        if (selectedProfile && selectedProfile.length > 0 && !useDataset) {
-
-            //TODO : Find the values parameter for Selected profile
-
-            // const profileWeights = selectedProfile[0].importance;
-            // values = { ...profileWeights };
-
-            Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
-                const entry = tqiEntry as TQIEntry;
-                Object.entries(entry.weights).forEach(([aspect, _]) => {
-                    values[aspect] = dataset.factors.quality_aspects[aspect]?.value || 0;
-                });
-            });
-        } else {
-            Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
-                const entry = tqiEntry as TQIEntry;
-                Object.entries(entry.weights).forEach(([aspect, _]) => {
-                    values[aspect] = dataset.factors.quality_aspects[aspect]?.value || 0;
-                });
-            });
-        }
         return values;
     };
 
-    const sliderValues = useMemo(() => {
-        const useDataset = !isProfileApplied;
-        return getInitialWeights(selectedProfile, dataset, useDataset);
-    }, [selectedProfile, dataset, isProfileApplied]);
 
-    const [values, setValues] = useState<{ [key: string]: number }>(sliderValues);
+
+
+    //
+    const n_child = Object.keys(values).length;
+
+    const nodeNames = Object.keys(values);
+    //
+    const [weigths, setWeights] = useState(Object.keys(recalculatedWeights).map(key=> recalculatedWeights[key]));
     useMemo(() => {
-        setValues(sliderValues);
-    }, [sliderValues]);
+        setWeights(Object.keys(recalculatedWeights).map(key=> recalculatedWeights[key]));
+    }, [recalculatedWeights]);
 
-    const nodeValues = useMemo(() => {
-        const useDataset = !isProfileApplied;
-        return getInitialNodeValues(selectedProfile, dataset, useDataset);
-    }, [selectedProfile, dataset, isProfileApplied]);
-
-    const [aspectValues, setAspectValues] = useState<{[key: string]: number}>(nodeValues);
+    const [importance, setImportance] = useState(Object.keys(values).map(key=> values[key]));
     useMemo(() => {
-        setAspectValues(nodeValues);
-    }, [nodeValues]);
+        setImportance(Object.keys(values).map(key=> values[key]));
+    }, [values]);
 
-    const resetAllAdjustments = () => {
-        const resetValues = getInitialWeights(selectedProfile, dataset, true);
-        setValues(resetValues);
-        onResetApplied();
-    };
+    const childNodeValues = useMemo(() => {
+        return getInitialchildNodeValues(dataset);
+    }, [ dataset]);
 
+    const [nodeValues, setNodeValues] = useState(Object.keys(childNodeValues).map(key=> childNodeValues[key]));
+    useMemo(() => {
+        setNodeValues(Object.keys(childNodeValues).map(key=> childNodeValues[key]));
+    }, [childNodeValues]);
+   
+    const [fcnName, setFcnName] = useState("defaults");
+
+    const [normCoefficient, setNormCoefficient] = useState(
+        normalizer_calc(importance, fcnName)
+    );
+
+
+    // //Number of x grid points for plotting
+    const x_tick = arrayRange(0,1,0.1);
+    const [contribution, setContribution]= useState(
+        calcContribution(nodeValues, importance, normCoefficient, fcnName)
+    )
+    useMemo(() =>{
+        setContribution(calcContribution(nodeValues, importance, normCoefficient, fcnName))
+    }, [nodeValues, importance, normCoefficient, fcnName])
+
+    // console.log("Node Contribution")
+    // console.log(contribution)
 
     return(
         <Tabs.Root className="TabsRoot" defaultValue="tab1">
@@ -227,7 +232,10 @@ export const TabsPanel : React.FC<AdjustmentTableProps> = ({
             </Tabs.List>
             <Tabs.Content className="TabsContent" value="tab1">
                 <p className="Text">Provides Information about Contributions</p>
-                {/*<PieContribution/>*/}
+                <PieContribution
+                    names={nodeNames}
+                    contributions={contribution}
+                />
             </Tabs.Content>
             <Tabs.Content className="TabsTrigger" value="tab2">
                 <p className="Text">Provides Information about sensitivity</p>

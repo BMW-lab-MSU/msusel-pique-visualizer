@@ -1,9 +1,13 @@
+// AdjustmentTableLogic.tsx
 import { useAtomValue } from "jotai";
 import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { State } from "../../../../state";
 import { Profile } from "../../../../types";
 import * as schema from "../../../../data/schema";
 import { AdjustmentTableUI, SliderMode } from "./AdjustmentTableUI";
+
+import "./FigureContainer/Figure.css"
+import {TabsPanel} from "../ImportanceDashBoard/AdjustmentSummary.tsx";
 
 interface Weights {
   [key: string]: number;
@@ -26,7 +30,7 @@ interface AdjustmentTableProps {
 export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   selectedProfile,
   isProfileApplied,
-  updatedTQIRaw, 
+  updatedTQIRaw,
   onResetApplied,
   onWeightsChange,
   onImportanceChange,
@@ -50,33 +54,33 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
         profileWeights = selectedProfile[0].importance;
       }
       else if (mode === SliderMode.characteristics){
-        profileWeights = selectedProfile[0].characteristic;        
+        profileWeights = selectedProfile[0].characteristic;
       }
 
-      weights = { ...profileWeights };      
-    } 
+      weights = { ...profileWeights };
+    }
     else {
       if (mode === SliderMode.importance){
         Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
-          const entry = tqiEntry as TQIEntry;          
+          const entry = tqiEntry as TQIEntry;
           Object.entries(entry.weights).forEach(([aspect, importance]) => {
             weights[aspect] = importance;
-          });          
+          });
         });
       }
 
       //dataset.factors.quality_aspects[name]?.value || 0
       else if (mode === SliderMode.characteristics){
         Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
-          const entry = tqiEntry as TQIEntry;          
+          const entry = tqiEntry as TQIEntry;
           Object.entries(entry.weights).forEach(([aspect, importance]) => {
             weights[aspect] = dataset.factors.quality_aspects[aspect]?.value || 0;
-          });          
+          });
         });
-      }      
+      }
     }
     return weights;
-  };  
+  };
 
   const sliderImportanceValues = useMemo(() => {
     const useDataset = !isProfileApplied;
@@ -142,10 +146,11 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     else if (mode === SliderMode.importance){
       setImportanceValues((prev) => ({ ...prev, [name]: newValue }));
       onImportanceChange(importanceValues);
-    }   
+    }
   };
 
   const handleDownload = () => {
+    // Define the initial weights
     let weights: Weights = {};
     Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
       const entry = tqiEntry as TQIEntry;
@@ -184,15 +189,27 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   };
 
   return (
-    <AdjustmentTableUI
-      dataset={dataset}
-      characteristicValues={characteristicValues}
-      importanceValues={importanceValues}
-      recalculatedWeights={recalculatedWeights}
-      updatedTQIRaw={updatedTQIRaw}
-      handleSliderChange={handleSliderChange}
-      resetAllAdjustments={resetAllAdjustments}
-      handleDownload={handleDownload}
-    />
+
+    <div className="Panels" style={{display:"grid", gridTemplateColumns: "repeat(2, 1fr)", gridGap:10}}>
+      <div className="Table">
+          <AdjustmentTableUI
+              dataset={dataset}
+              characteristicValues={characteristicValues}
+              importanceValues={importanceValues}
+              recalculatedWeights={recalculatedWeights}
+              updatedTQIRaw={updatedTQIRaw}
+              handleSliderChange={handleSliderChange}
+              resetAllAdjustments={resetAllAdjustments}
+              handleDownload={handleDownload}
+          />
+      </div>
+      <div className="Visual">
+        <TabsPanel
+          dataset={dataset}
+          values={values}
+          recalculatedWeights={recalculatedWeights}
+        />
+      </div>
+    </div>
   );
 };
