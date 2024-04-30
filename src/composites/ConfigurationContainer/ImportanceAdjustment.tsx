@@ -31,36 +31,9 @@ import ProfileSelectionLogic from "./ImportanceAdjustment/ProfileSelection/Profi
 import { Profile } from "../../types";
 import {PieContribution} from "./ImportanceAdjustment/AdjustmentTable/FigureContainer/Figures.tsx";
 
+import {TabsPanel} from "./ImportanceAdjustment/ImportanceDashBoard/AdjustmentSummary.tsx";
 
 
-
-export const TabsPanel = () =>{
-  return(
-    <Tabs.Root className="TabsRoot" defaultValue="tab1">
-      <Tabs.List className="TabsList" aria-label="Addditional details">
-        <Tabs.Trigger className="TabsTrigger" value="tab1">
-          Contributions
-        </Tabs.Trigger>
-        <Tabs.Trigger className="TabsTrigger" value="tab2">
-          Sensitivity
-        </Tabs.Trigger>
-        <Tabs.Trigger className="TabsTrigger" value="tab3">
-          Impacts
-        </Tabs.Trigger>
-      </Tabs.List>
-      <Tabs.Content className="TabsContent" value="tab1">
-        <p className="Text">Provides Information about Contributions</p>
-        {/*<PieContribution/>*/}
-      </Tabs.Content>
-      <Tabs.Content className="TabsTrigger" value="tab2">
-        <p className="Text">Provides Information about sensitivity</p>
-      </Tabs.Content>
-      <Tabs.Content className="TabsTrigger" value="tab3">
-        <p className="Text">Provides Information about Impacts</p>
-      </Tabs.Content>
-    </Tabs.Root>
-  );
-}
 
 export const ImportanceAdjustment = () => {
   const [selectedProfile, setSelectedProfile] = useState<
