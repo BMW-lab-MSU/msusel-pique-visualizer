@@ -7,6 +7,8 @@ export function createState() {
   const filteringState = atom<"no-filter" | "by-risk-level" | "by-range">("no-filter");
   const hideZeroWeightEdgeState = atom<"not-hidding" | "hidding">("not-hidding");
   const hideOneValueNodeState = atom<"not-hidding" | "hidding">("not-hidding");
+
+  const definition = atom<schema.base.Schema | undefined>(undefined);
   
 
   // when filteringState = by-risk-level, checkbox states
@@ -46,7 +48,8 @@ export function createState() {
     adjustedImportance,
     tqiValue,
     originalImportance,
-    originalTqiValue
+    originalTqiValue,
+    definition
   };
 }
 
