@@ -1,6 +1,4 @@
-//AdjustmentSummar.tsx
-
-
+//AdjustmentSummary.tsx
 import React, {useMemo, useState} from "react";
 import {State} from "../../../../state";
 import {Profile} from "../../../../types";

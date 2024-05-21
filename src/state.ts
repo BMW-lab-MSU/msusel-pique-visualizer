@@ -7,7 +7,9 @@ export function createState() {
   const filteringState = atom<"no-filter" | "by-risk-level" | "by-range">("no-filter");
   const hideZeroWeightEdgeState = atom<"not-hidding" | "hidding">("not-hidding");
   const hideOneValueNodeState = atom<"not-hidding" | "hidding">("not-hidding");
-  
+
+  const definition = atom<schema.base.Schema | undefined>(undefined);
+
 
   // when filteringState = by-risk-level, checkbox states
   const filteringByRiskLevelCheckboxStates = atom<Record<string, boolean>>({
@@ -26,9 +28,11 @@ export function createState() {
 
   // State for importance adjustment
   const adjustedImportance = atom<Record<string, number>>({});
+  const originalImportance = atom<Record<string, number>>({});
 
   // State for tqi update based on importance adjustment
   const tqiValue = atom<number | undefined>(undefined);
+  const originalTqiValue = atom<number | undefined>(undefined);
 
   return {
     dataset,
@@ -43,6 +47,9 @@ export function createState() {
     maxWeightState,
     adjustedImportance,
     tqiValue,
+    originalImportance,
+    originalTqiValue,
+    definition
   };
 }
 
