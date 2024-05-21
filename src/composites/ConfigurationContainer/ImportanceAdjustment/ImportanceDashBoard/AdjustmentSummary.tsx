@@ -10,7 +10,7 @@ import {divide, matrix, multiply} from "mathjs";
 import {stackOffsetWiggle} from "d3";
 
 import "./plotStyle.css"
-import {PieContribution} from "./Plots/AdjustementPlots.tsx";
+import {PieContribution, SensitivityChart} from "./Plots/AdjustementPlots.tsx";
 
 
 interface Weights {
@@ -140,8 +140,100 @@ function calcContribution(values, importance, normCoefficient, fcnName){
     return nodeContribution
 }
 
+function calcImpacts(values, importance, normCoefficient, fcnName, strategy){
+    const n_nodes = values.length
+    let impact_val = values
+    let impact_idx = Array.apply(null, {length: n_nodes}).map(Number.call, Number)
+
+    switch (strategy){
+        case "Lowest":{
+            impact_val = values
+
+            break;
+        }
+        case "Fastest":{
+            impact_val = importance
+            break;
+        }
+        case "LowestEffort":{
+            impact_val = multVectors(subConst2Vec(1, values), importance)
+
+        }
+        default:{
+
+        }
+    }
+    return impact_val
+}
+
+function calcImpactIdx(impact_val, strategy){
+    let decor = (v, i) => [v, i];          // set index to value
+    let undecor = a => a[1];               // leave only index
+    let argsort = arr => arr.map(decor).sort().map(undecor);
 
 
+    let impact_idx =  argsort(impact_val).reverse()
+
+    switch (strategy) {
+        case "Lowest":{
+            impact_idx =  argsort(impact_val)
+            break;
+        }
+        default:{
+            impact_idx =  argsort(impact_val).reverse()
+            break;
+
+        }
+    }
+    return impact_idx
+}
+
+/***
+ * Returns the sensitivity of a child node for given set of values.
+ *
+ * @param {array} values The current child node values.
+ * @param {array} importance The current importance of the child nodes.
+ * @param {number} idx The child node index to be evaluated.
+ * @param {number} normCoefficient The normalization factor.
+ * @param {string} fcnName The function name to be used for evaluation.
+ * @param {array} x_tick The set of node values to be evaluated
+ *
+ * @returns {array} The set of values for the given x_tick
+ */
+function calcSensitivityNode(values, importance, idx, normCoefficient, fcnName, x_tick){
+
+    let y_ticks =[];
+    const n_x_tick = x_tick.length;
+    let x_array = Array(n_x_tick).fill(values.slice())
+
+    for (let i =0; i<n_x_tick; i=i+1){
+        x_array[i][idx]= x_tick[i];
+        y_ticks.push(calcScore(x_array[i], importance, normCoefficient, fcnName))
+    }
+    return y_ticks
+}
+
+/***
+ * Returns the sensitivity of for all child nodes for given set of values
+ *
+ * @param {array} values The current child node values.
+ * @param {array} importance The current importance of the child nodes.
+ * @param {number} normCoefficient The scaling factor for normalization
+ * @param {string} fcnName The function name to be used for evaluation.
+ * @param {array} x_tick The set of node values to be evaluated
+ *
+ * @returns {array} The array of arrays for the given x_tick
+ */
+function calcSensitivity(values, importance, normCoefficient,fcnName, x_tick){
+    let y_sensitivity = [];
+    const n_nodes = values.length;
+    const node_idx = Array.apply(null, {length: n_nodes}).map(Number.call, Number)
+
+    y_sensitivity.push(node_idx.map(idx=>
+        (calcSensitivityNode(values, importance, idx, normCoefficient,fcnName, x_tick)))
+    )
+    return y_sensitivity
+}
 
 
 interface AdjustmentSummaryProps {
@@ -156,7 +248,7 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
        recalculatedWeights,
    }) =>{
 
-    const getInitialchildNodeValues = (dataset: schema.base.Schema): { [key: string]: number } => {
+    const getInitialChildNodeValues = (dataset: schema.base.Schema): { [key: string]: number } => {
         let values: ChildchildNodeValues={};
 
         //TODO : Make it generalize to work with each layer in pique
@@ -190,7 +282,7 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
     }, [values]);
 
     const childNodeValues = useMemo(() => {
-        return getInitialchildNodeValues(dataset);
+        return getInitialChildNodeValues(dataset);
     }, [ dataset]);
 
     const [nodeValues, setNodeValues] = useState(Object.keys(childNodeValues).map(key=> childNodeValues[key]));
@@ -203,16 +295,35 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
     const [normCoefficient, setNormCoefficient] = useState(
         normalizer_calc(importance, fcnName)
     );
+    useMemo(() => {
+        setNormCoefficient(normalizer_calc(importance, fcnName))
+    }, [importance, fcnName]);
 
 
     // //Number of x grid points for plotting
     const x_tick = arrayRange(0,1,0.1);
+    const threshold = 0.9;
+
     const [contribution, setContribution]= useState(
         calcContribution(nodeValues, importance, normCoefficient, fcnName)
     )
     useMemo(() =>{
         setContribution(calcContribution(nodeValues, importance, normCoefficient, fcnName))
     }, [nodeValues, importance, normCoefficient, fcnName])
+
+    const [nodeScore, setNodeScore] =useState(
+        calcScore(nodeValues, importance, normCoefficient, fcnName)
+    )
+    useMemo(() => {
+        setNodeScore(calcScore(nodeValues, importance, normCoefficient, fcnName))
+    }, [nodeValues, importance, normCoefficient, fcnName]);
+
+    const [scoreSensitivity, setScoreSensitivity] = useState(
+        calcSensitivity(nodeValues, importance, normCoefficient,fcnName, x_tick)
+    );
+    useMemo( () => {
+        setScoreSensitivity(calcSensitivity(nodeValues, importance, normCoefficient,fcnName, x_tick))
+    }, [nodeValues, importance, normCoefficient,fcnName]);
 
     // console.log("Node Contribution")
     // console.log(contribution)
@@ -239,6 +350,14 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
             </Tabs.Content>
             <Tabs.Content className="TabsTrigger" value="tab2">
                 <p className="Text">Provides Information about sensitivity</p>
+                <SensitivityChart
+                    names={nodeNames}
+                    values={nodeValues}
+                    score={nodeScore}
+                    sensitivity={scoreSensitivity}
+                    x_ticks={x_tick}
+                    threshold={threshold}
+                    />
             </Tabs.Content>
             <Tabs.Content className="TabsTrigger" value="tab3">
                 <p className="Text">Provides Information about Impacts</p>
