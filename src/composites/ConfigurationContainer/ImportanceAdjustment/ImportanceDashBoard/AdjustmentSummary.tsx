@@ -1,11 +1,12 @@
 //AdjustmentSummary.tsx
-import React, {useMemo, useState} from "react";
+import React, {useMemo, useState, useId, useEffect} from "react";
 import {State} from "../../../../state";
 import {Profile} from "../../../../types";
 import * as schema from "../../../../data/schema";
 import * as Tabs from "@radix-ui/react-tabs";
 import {divide, matrix, multiply} from "mathjs";
 import {stackOffsetWiggle} from "d3";
+
 
 import "./plotStyle.css"
 import {PieContribution, SensitivityChart} from "./Plots/AdjustementPlots.tsx";
@@ -234,6 +235,30 @@ function calcSensitivity(values, importance, normCoefficient,fcnName, x_tick){
 }
 
 
+/***
+
+ */
+
+function StrategySelect({ID, selectValue, handleChange}){
+    return(
+        <label htmlFor={ID}>
+            Strategy :
+            <select
+                name="selecStartegy"
+                value={selectValue}
+                onChange={e => handleChange(e.target.value)}
+            >
+                <option value="Lowest">Lowest</option>
+                <option value="Fastest">Fastest</option>
+                <option value="LowestEffort">Lowest Effort</option>
+                <option value="Custom">Custom 1</option>
+            </select>
+        </label>
+    );
+}
+
+
+
 interface AdjustmentSummaryProps {
     dataset: schema.base.Schema;
     values: { [key: string]: number };
@@ -319,9 +344,31 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
     const [scoreSensitivity, setScoreSensitivity] = useState(
         calcSensitivity(nodeValues, importance, normCoefficient,fcnName, x_tick)
     );
-    useMemo( () => {
+    useMemo(() => {
         setScoreSensitivity(calcSensitivity(nodeValues, importance, normCoefficient,fcnName, x_tick))
     }, [nodeValues, importance, normCoefficient,fcnName]);
+
+
+    const strategySelectID =useId();
+    const [strategy, setStrategy] = useState("Lowest");
+
+    const [scoreImpact, setScoreImpact] = useState(Array(n_child).fill(0));
+    const [scoreImpactIdx, setScoreImpactIdx] = useState(Array(n_child).fill(0));
+    useMemo(() => {
+        setScoreImpact(calcImpacts(nodeValues, importance, normCoefficient, fcnName, strategy));
+    },[nodeValues, importance, normCoefficient, fcnName, strategy]);
+    useMemo(() =>{
+        setScoreImpact(calcImpactIdx(scoreImpact, strategy));
+    },[scoreImpactIdx, strategy]);
+
+
+
+    function handleStrategyChanged(newStrategy){
+        setStrategy(newStrategy);
+        const newImpacts = calcImpacts(nodeValues, importance, normCoefficient, fcnName, newStrategy)
+        setScoreImpact(newImpacts )
+        setScoreImpactIdx(calcImpactIdx(newImpacts , newStrategy))
+    }
 
     // console.log("Node Contribution")
     // console.log(contribution)
@@ -346,7 +393,7 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
                     contributions={contribution}
                 />
             </Tabs.Content>
-            <Tabs.Content className="TabsTrigger" value="tab2">
+            <Tabs.Content className="TabsContent" value="tab2">
                 <p className="Text">Provides Information about sensitivity</p>
                 <SensitivityChart
                     names={nodeNames}
@@ -357,8 +404,23 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
                     threshold={threshold}
                     />
             </Tabs.Content>
-            <Tabs.Content className="TabsTrigger" value="tab3">
+            <Tabs.Content className="TabsContent" value="tab3">
                 <p className="Text">Provides Information about Impacts</p>
+                <StrategySelect
+                    ID={strategySelectID}
+                    selectValue={strategy}
+                    handleChange={handleStrategyChanged}
+                />
+                <div className="Recommendations">
+                    <p>Recommendation priority list</p>
+                    <ol>
+                        {scoreImpactIdx.map((idx) =>
+                            <li>
+                                {nodeNames[idx]} : {scoreImpact[idx]}
+                            </li>
+                        )}
+                    </ol>
+                </div>
             </Tabs.Content>
         </Tabs.Root>
     );
