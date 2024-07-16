@@ -4,6 +4,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { State } from "./state";
 import * as R from "ramda";
 import { Wrapper } from "./Wrapper";
+import { DefinitionWrapper} from "./DefinitionWrapper.tsx";
 import { Box } from "@radix-ui/themes";
 import { TreeDisplayProto } from "./composites/TreeDisplayProto/TreeDisplayProto";
 import { ReactFlowProvider } from "reactflow";
@@ -21,8 +22,8 @@ function App() {
         height: "90vh",
       }}
     >
-        {R.isNil(definition) ? <DefinitionUploader /> : <Wrapper/>}
-      {R.isNil(dataset) ? <FileUploader /> : <Wrapper />} 
+        {R.isNil(definition) ? <DefinitionUploader /> : <DefinitionWrapper />}
+        {R.isNil(dataset) ? <FileUploader /> : <Wrapper />}
       {/* <ReactFlowProvider> */}
         {/* <TreeDisplayProto />
       </ReactFlowProvider> */}
