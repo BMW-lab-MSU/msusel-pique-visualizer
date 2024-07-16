@@ -8,8 +8,9 @@ import {divide, matrix, multiply} from "mathjs";
 import {stackOffsetWiggle} from "d3";
 
 
-import "./plotStyle.css"
+// import "./plotStyle.css"
 import {PieContribution, SensitivityChart} from "./Plots/AdjustementPlots.tsx";
+import {Flex, Text} from "@radix-ui/themes";
 
 
 interface Weights {
@@ -242,7 +243,7 @@ function calcSensitivity(values, importance, normCoefficient,fcnName, x_tick){
 function StrategySelect({ID, selectValue, handleChange}){
     return(
         <label htmlFor={ID}>
-            Strategy :
+            <p className="Text">Strategy</p>
             <select
                 name="selecStartegy"
                 value={selectValue}
@@ -256,7 +257,6 @@ function StrategySelect({ID, selectValue, handleChange}){
         </label>
     );
 }
-
 
 
 interface AdjustmentSummaryProps {
@@ -358,17 +358,17 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
         setScoreImpact(calcImpacts(nodeValues, importance, normCoefficient, fcnName, strategy));
     },[nodeValues, importance, normCoefficient, fcnName, strategy]);
     useMemo(() =>{
-        setScoreImpact(calcImpactIdx(scoreImpact, strategy));
-    },[scoreImpactIdx, strategy]);
+        setScoreImpactIdx(calcImpactIdx(scoreImpact, strategy));
+    },[scoreImpact, strategy]);
 
 
 
-    function handleStrategyChanged(newStrategy){
-        setStrategy(newStrategy);
-        const newImpacts = calcImpacts(nodeValues, importance, normCoefficient, fcnName, newStrategy)
-        setScoreImpact(newImpacts )
-        setScoreImpactIdx(calcImpactIdx(newImpacts , newStrategy))
-    }
+    // function handleStrategyChanged(newStrategy){
+    //     setStrategy(newStrategy);
+    //     const newImpacts = calcImpacts(nodeValues, importance, normCoefficient, fcnName, newStrategy)
+    //     setScoreImpact(newImpacts )
+    //     setScoreImpactIdx(calcImpactIdx(newImpacts , newStrategy))
+    // }
 
     // console.log("Node Contribution")
     // console.log(contribution)
@@ -409,9 +409,9 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
                 <StrategySelect
                     ID={strategySelectID}
                     selectValue={strategy}
-                    handleChange={handleStrategyChanged}
+                    handleChange={setStrategy}
                 />
-                <div className="Recommendations">
+                <div className="Text">
                     <p>Recommendation priority list</p>
                     <ol>
                         {scoreImpactIdx.map((idx) =>
