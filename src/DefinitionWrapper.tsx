@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { useState } from "react";
+import React, { useState } from "react";
 import { State } from "./state";
 import { Box, IconButton, Tabs, Flex, Heading } from "@radix-ui/themes";
 import {
@@ -18,7 +18,11 @@ import { LegendContainer } from "./composites/LegendContainer/Legend";
 import { TreeDisplay } from "./composites/TreeDisplay/TreeDisplay";
 import { ListDisplay } from "./composites/ListDisplay/ListDisplay";
 
+import {CalibrationOverview} from "./composites/Calibration/Overview/CalibrationOverview.tsx";
+
 import { ConfigurationContainer } from "./composites/ConfigurationContainer/ConfigurationContainer";
+
+import { ImportanceAdjustment} from "./composites/ConfigurationContainer/ImportanceAdjustment.tsx";
 
 export const DefinitionWrapper = () => {
     const definition = useAtomValue(State.definition);
@@ -76,13 +80,7 @@ export const DefinitionWrapper = () => {
                     height="100"
                     style={{ marginRight: "20px" }}
                 />
-                {/* <img
-          src="https://www.cisa.gov/profiles/cisad8_gov/themes/custom/gesso/dist/images/backgrounds/6fdaa25709d28dfb5cca.svg"
-          alt="CISA Logo"
-          width="100"
-          height="100"
-          style={{ marginRight: "20px" }}
-        /> */}
+
                 <Heading>PIQUE Calibration</Heading>
                 <img
                     src="https://raw.githubusercontent.com/MSUSEL/msusel-pique-visualizer/refactorZiyi/src/assets/PIQUE_svg.svg"
@@ -142,6 +140,7 @@ export const DefinitionWrapper = () => {
                                 paddingRight: "50px",
                             }}
                         >
+
                             {/*<ButtonContainer />*/}
                         </Flex>
                     )}
@@ -166,13 +165,16 @@ export const DefinitionWrapper = () => {
                         }}
                     >
                         {/*<LegendContainer />*/}
+
+                        <CalibrationOverview />
+
                     </div>
 
                     {/* Layout Tabs: Occupying the remaining 90% of the Middle Sub-Block Height */}
 
                     <Tabs.Root defaultValue="overview">
                         <Tabs.List>
-                            <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+                            <Tabs.Trigger value="overview">Adjustments</Tabs.Trigger>
                             <Tabs.Trigger value="tree">Tree</Tabs.Trigger>
                             <Tabs.Trigger value="list">List</Tabs.Trigger>
                         </Tabs.List>
@@ -184,9 +186,10 @@ export const DefinitionWrapper = () => {
                                 overflow: "auto", // Allows scrolling within the tab content if it exceeds the container's height
                             }}
                         >
-                            <Tabs.Content value="overview">
+                            <Tabs.Content value="Adjustments">
                                 <Box width="100%">
-                                    {/*<OverviewTab />*/}
+                                    {/*<CalibrationOverview />*/}
+                                    {/*<ImportanceAdjustment />*/}
                                 </Box>
                             </Tabs.Content>
 
