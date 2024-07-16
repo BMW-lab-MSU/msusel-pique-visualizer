@@ -83,8 +83,8 @@ export const DefinitionUploader = () => {
                     const result = e.target?.result;
                     try {
                         const parsed = JSON.parse(result as string);
+                        // const validationResult = schema.base.dataset.safeParse(parsed);
                         const validationResult = definitionSchema.base.definition.safeParse(parsed);
-                        console.log(validationResult)
                         const currentFileName = file.name;
                         setFileName(currentFileName);
                         if (validationResult.success) {
@@ -94,16 +94,17 @@ export const DefinitionUploader = () => {
                             setErrorDetails(""); // Clear error details on success
 
                             const tqiObjects = validationResult.data.factors.tqi;
-                            // const firstTqiKey = Object.keys(tqiObjects)[0];
-                            // const firstTqiObj = tqiObjects[firstTqiKey];
-                            // if (firstTqiObj) {
-                            //     // set the initial value for adjustments of tqi and importance
-                            //     setAdjustedImportance(firstTqiObj.weights);
-                            //     setTqiValue(firstTqiObj.value);
-                            //     // set the initial tqi and importance for the use of reset
-                            //     setOriginalTqiValue(firstTqiObj.value);
-                            //     setOriginalImportance(firstTqiObj.weights);
-                            // }
+                            const firstTqiKey = Object.keys(tqiObjects)[0];
+                            const firstTqiObj = tqiObjects[firstTqiKey];
+
+                            if (firstTqiObj) {
+                                 // set the initial value for adjustments of tqi and importance
+                                 setAdjustedImportance(firstTqiObj.weights);
+                                 setTqiValue(firstTqiObj.value);
+                                 // set the initial tqi and importance for the use of reset
+                                 setOriginalTqiValue(firstTqiObj.value);
+                                 setOriginalImportance(firstTqiObj.weights);
+                            }
                         } else {
                             const details = JSON.stringify(
                                 validationResult.error.issues,
