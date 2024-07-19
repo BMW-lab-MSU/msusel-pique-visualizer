@@ -17,19 +17,37 @@ interface TQIEntry {
   weights: Weights;
 }
 
+interface ChildchildNodeValues {
+  [key: string]: number;
+}
+
 interface AdjustmentTableProps {
   selectedProfile?: Profile[];
   isProfileApplied: boolean;
   onResetApplied: () => void;
+  mode: string;
 }
 
 export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   selectedProfile,
   isProfileApplied,
-  onResetApplied,
+  onResetApplied, mode,
 }) => {
-  const dataset = useAtomValue(State.dataset);
+
+
+  const dataset = (() => {
+    if (mode == "Evaluate") {
+      return useAtomValue(State.dataset);
+    } else if (mode == "Derive") {
+      return useAtomValue(State.definition);
+    } else {
+      return null;
+    }
+  }) ();
+
   if (!dataset) return null;
+
+
 
   const getInitialWeights = (
     selectedProfile: Profile[] | undefined,
@@ -51,6 +69,22 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     return weights;
   };
 
+
+  const getInitialChildNodeValues = (dataset: schema.base.Schema): { [key: string]: number } => {
+    let values: ChildchildNodeValues={};
+
+    //TODO : Make it generalize to work with each layer in pique
+
+    Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
+      const entry = tqiEntry as TQIEntry;
+      Object.entries(entry.weights).forEach(([aspect, _]) => {
+        values[aspect] = dataset.factors.quality_aspects[aspect]?.value || 0;
+      });
+    });
+
+    return values;
+  };
+
   const sliderValues = useMemo(() => {
     const useDataset = !isProfileApplied;
     return getInitialWeights(selectedProfile, dataset, useDataset);
@@ -61,9 +95,21 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     setValues(sliderValues);
   }, [sliderValues]);
 
+  // const n_nodes = Object.keys(values).length;
+  const childNodeValues = useMemo(() => {
+    return getInitialChildNodeValues(dataset);
+  }, [ dataset]);
+
+  const [nodeValues, setNodeValues] = useState<{[key: string]: number}>(childNodeValues);
+  useMemo(() => {
+    setNodeValues(getInitialChildNodeValues(dataset));
+  }, [childNodeValues]);
+
+
   const resetAllAdjustments = () => {
     const resetValues = getInitialWeights(selectedProfile, dataset, true);
     setValues(resetValues);
+    setNodeValues(getInitialChildNodeValues(dataset));
     onResetApplied();
   };
 
@@ -79,9 +125,16 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     return newWeights;
   }, [values]);
 
+
+
+
   const handleSliderChange = (name: string, newImportance: number) => {
     setValues((prev) => ({ ...prev, [name]: newImportance }));
   };
+
+  const handleNodeValueChange = (name: string, newImportance: number) => {
+    setNodeValues((prev) => ({ ...prev, [name]: newImportance }));
+  }
 
   const handleDownload = () => {
     // Define the initial weights
@@ -130,10 +183,13 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
         <AdjustmentTableUI
           dataset={dataset}
           values={values}
+          nodeValues={nodeValues}
           recalculatedWeights={recalculatedWeights}
           handleSliderChange={handleSliderChange}
           resetAllAdjustments={resetAllAdjustments}
           handleDownload={handleDownload}
+          handleNodeValueChange={handleNodeValueChange}
+          mode={mode}
         />
       </div>
       <div className="Visual">
@@ -141,6 +197,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
           dataset={dataset}
           values={values}
           recalculatedWeights={recalculatedWeights}
+          childNodeValues={nodeValues}
         />
       </div>
     </div>

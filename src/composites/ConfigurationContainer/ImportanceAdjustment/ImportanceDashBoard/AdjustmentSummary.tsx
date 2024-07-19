@@ -10,7 +10,8 @@ import {stackOffsetWiggle} from "d3";
 
 // import "./plotStyle.css"
 import {PieContribution, SensitivityChart} from "./Plots/AdjustementPlots.tsx";
-import {Flex, Text} from "@radix-ui/themes";
+import {Box, Flex, Text} from "@radix-ui/themes";
+import * as Slider from "@radix-ui/react-slider";
 
 
 interface Weights {
@@ -263,12 +264,14 @@ interface AdjustmentSummaryProps {
     dataset: schema.base.Schema;
     values: { [key: string]: number };
     recalculatedWeights: { [key: string]: number };
+    childNodeValues: { [key: string]: number };
 }
 
 export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
        dataset,
        values,
        recalculatedWeights,
+    childNodeValues,
    }) =>{
 
     const getInitialChildNodeValues = (dataset: schema.base.Schema): { [key: string]: number } => {
@@ -304,9 +307,9 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
         setImportance(Object.keys(values).map(key=> values[key]));
     }, [values]);
 
-    const childNodeValues = useMemo(() => {
-        return getInitialChildNodeValues(dataset);
-    }, [ dataset]);
+    // const childNodeValues = useMemo(() => {
+    //     return getInitialChildNodeValues(dataset);
+    // }, [ dataset]);
 
     const [nodeValues, setNodeValues] = useState(Object.keys(childNodeValues).map(key=> childNodeValues[key]));
     useMemo(() => {
@@ -325,7 +328,8 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
 
     // //Number of x grid points for plotting
     const x_tick = arrayRange(0,1,0.1);
-    const threshold = 0.9;
+    const [threshold, setThreshold] = useState(1.0);
+
 
     const [contribution, setContribution]= useState(
         calcContribution(nodeValues, importance, normCoefficient, fcnName)
@@ -362,14 +366,6 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
     },[scoreImpact, strategy]);
 
 
-
-    // function handleStrategyChanged(newStrategy){
-    //     setStrategy(newStrategy);
-    //     const newImpacts = calcImpacts(nodeValues, importance, normCoefficient, fcnName, newStrategy)
-    //     setScoreImpact(newImpacts )
-    //     setScoreImpactIdx(calcImpactIdx(newImpacts , newStrategy))
-    // }
-
     // console.log("Node Contribution")
     // console.log(contribution)
 
@@ -383,7 +379,7 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
                     Sensitivity
                 </Tabs.Trigger>
                 <Tabs.Trigger className="TabsTrigger" value="tab3">
-                    Impacts
+                    Recommendations
                 </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content className="TabsContent" value="tab1">
@@ -394,6 +390,7 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
                 />
             </Tabs.Content>
             <Tabs.Content className="TabsContent" value="tab2">
+                <div>
                 <p className="Text">Provides Information about sensitivity</p>
                 <SensitivityChart
                     names={nodeNames}
@@ -402,10 +399,30 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
                     sensitivity={scoreSensitivity}
                     x_ticks={x_tick}
                     threshold={threshold}
-                    />
+                    /></div>
+                <div>
+                Threshold
+                <Box style={{ position: 'relative', padding: '20px' }}>
+                    <Slider.Root
+                        value= {[threshold]}
+                        onValueChange={(value) => setThreshold(value[0])}
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        className="SliderRoot">
+                        <Slider.Track className="SliderTrack">
+                            <Slider.Range className="SliderRange" />
+                        </Slider.Track>
+                        <Slider.Thumb className="SliderThumb" />
+                    </Slider.Root>
+                    <div style={{ position: 'absolute', top: '-2px', left: `${threshold * 100}%`, transform: 'translateX(-50%)' }}>
+                        {threshold.toFixed(2)}
+                    </div>
+                </Box>
+                </div>
             </Tabs.Content>
             <Tabs.Content className="TabsContent" value="tab3">
-                <p className="Text">Provides Information about Impacts</p>
+                <p className="Text">Provides Information about Recommendations</p>
                 <StrategySelect
                     ID={strategySelectID}
                     selectValue={strategy}
@@ -416,7 +433,7 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
                     <ol>
                         {scoreImpactIdx.map((idx) =>
                             <li>
-                                {nodeNames[idx]} : {scoreImpact[idx]}
+                                {nodeNames[idx]} : {scoreImpact[idx].toFixed(3)}
                             </li>
                         )}
                     </ol>

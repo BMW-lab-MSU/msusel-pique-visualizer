@@ -1,5 +1,5 @@
 // AdjustmentTableUI.tsx
-import React from "react";
+import React, {useMemo} from "react";
 import {
   Flex,
   Text,
@@ -11,6 +11,7 @@ import {
   Card,
   Avatar,
   Button,
+  TextField,
 } from "@radix-ui/themes";
 import {
   ResetIcon,
@@ -29,19 +30,23 @@ import { State } from "../../../../state";
 interface AdjustmentTableUIProps {
   dataset: schema.base.Schema;
   values: { [key: string]: number };
+  nodeValues: { [key: string]: number };
   recalculatedWeights: { [key: string]: number };
   handleSliderChange: (name: string, newImportance: number) => void;
   resetAllAdjustments: () => void;
   handleDownload: () => void;
+  handleNodeValueChange: (name: string, newImportance: number) => void;
+  mode: string;
 }
 
 export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
   dataset,
   values,
+    nodeValues,
   recalculatedWeights,
   handleSliderChange,
   resetAllAdjustments,
-  handleDownload,
+  handleDownload, handleNodeValueChange, mode,
 }) => {
   const precision = 4;
   const currentTQI =
@@ -52,7 +57,8 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
     recalculatedWeights &&
     Object.entries(recalculatedWeights).reduce(
       (total, [name, weight]) =>
-        total + (dataset.factors.quality_aspects[name]?.value || 0) * weight,
+        // total + (dataset.factors.quality_aspects[name]?.value || 0) * weight,
+          total + nodeValues[name] * weight,
       0
     );
 
@@ -69,6 +75,9 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
     setTqiValue(updatedTQI); // Set tqiValue as updatedTQI
     setAdjustedImportance(recalculatedWeights); // Set adjustedImportance as recalculatedWeights
   };
+
+
+
   return (
     <Flex direction={"column"} align={"center"}>
       <Box>
@@ -131,7 +140,8 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                     key={name}
                     name={name}
                     qualityAspectValue={
-                      dataset.factors.quality_aspects[name]?.value || 0
+                      // dataset.factors.quality_aspects[name]?.value || 0
+                        nodeValues[name]
                     }
                     qualityAspectDescription={
                       dataset.factors.quality_aspects[name]?.description || ""
@@ -140,6 +150,8 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                     sliderValue={values[name]}
                     recalculatedWeight={recalculatedWeights[name]}
                     onSliderChange={handleSliderChange}
+                    onNodeValueChange={handleNodeValueChange}
+                    mode={mode}
                   />
                 );
               });
