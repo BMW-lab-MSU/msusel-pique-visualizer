@@ -157,7 +157,7 @@ function calcImpacts(values, importance, normCoefficient, fcnName, strategy){
         }
         case "LowestEffort":{
             impact_val = multVectors(subConst2Vec(1, values), importance)
-
+            break;
         }
         default:{
 
