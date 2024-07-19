@@ -1,5 +1,5 @@
 // AdjustmentTableUI.tsx
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Flex,
   Text,
@@ -11,6 +11,7 @@ import {
   Card,
   Avatar,
   Button,
+  TextField,
 } from "@radix-ui/themes";
 import {
   ResetIcon,
@@ -37,22 +38,26 @@ interface AdjustmentTableUIProps {
   dataset: schema.base.Schema;
   characteristicValues: { [key: string]: number };
   importanceValues: { [key: string]: number };
+  nodeValues: { [key: string]: number };
   recalculatedWeights: { [key: string]: number };
   updatedTQIRaw : number;
   handleSliderChange: (name: string, newImportance: number, mode : SliderMode) => void;
   resetAllAdjustments: () => void;
   handleDownload: () => void;
+  handleNodeValueChange: (name: string, newImportance: number) => void;
+  mode: string;
 }
 
 export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
   dataset,
   characteristicValues,
   importanceValues,
+    nodeValues,
   recalculatedWeights,
   updatedTQIRaw,
   handleSliderChange,
   resetAllAdjustments,
-  handleDownload,
+  handleDownload, handleNodeValueChange, mode,
 }) => {
   const precision = 4;
   const currentTQI =
@@ -63,7 +68,8 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
     recalculatedWeights &&
     Object.entries(recalculatedWeights).reduce(
       (total, [name, weight]) =>
-        total + (characteristicValues[name] || 0) * weight,
+        // total + (characteristicValues[name] || 0) * weight,
+          total + nodeValues[name] * weight,
       0
     );*/
 
@@ -164,7 +170,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                     qualityAspectDescription={
                       dataset.factors.quality_aspects[name]?.description || ""
                     }
-                    
+
                     characteristicValue={tqiEntry.value}
                     characteristicSlider={characteristicValues[name]}
 
@@ -172,6 +178,8 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                     importanceSlider={importanceValues[name]}
                     recalculatedWeight={recalculatedWeights[name]}
                     onSliderChange={handleSliderChange}
+                    onNodeValueChange={handleNodeValueChange}
+                    mode={mode}
                   />
                 );
               });

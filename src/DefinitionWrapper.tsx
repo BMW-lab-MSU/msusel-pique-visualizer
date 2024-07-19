@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
 import React, { useState } from "react";
 import { State } from "./state";
-import { Box, IconButton, Tabs, Flex, Heading } from "@radix-ui/themes";
+import { Box, IconButton, Tabs, Flex, Heading, Text } from "@radix-ui/themes";
 import {
     GearIcon,
     PinLeftIcon,
@@ -23,10 +23,31 @@ import {CalibrationOverview} from "./composites/Calibration/Overview/Calibration
 import { ConfigurationContainer } from "./composites/ConfigurationContainer/ConfigurationContainer";
 
 import { ImportanceAdjustment} from "./composites/ConfigurationContainer/ImportanceAdjustment.tsx";
+import {AdjustmentTableLogic
+} from "./composites/ConfigurationContainer/ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic.tsx";
+import ProfileSelectionLogic
+    from "./composites/ConfigurationContainer/ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic.tsx";
+import {Profile} from "./types.ts";
 
 export const DefinitionWrapper = () => {
     const definition = useAtomValue(State.definition);
     const dataset = useAtomValue(State.dataset);
+
+
+    const [selectedProfile, setSelectedProfile] = useState<
+        Profile | Profile[] | null
+    >(null);
+
+    // Handler that updates the selectedProfile state
+    const handleProfileApply = (profile: Profile[] | null) => {
+        setSelectedProfile(profile);
+    };
+
+    const isProfileApplied = selectedProfile !== null;
+
+    const handleReset = () => {
+        setSelectedProfile(null); // Reset the selected profile when the user clicks reset
+    };
 
     // const processedData = useProcessedData();
     // if (!processedData) return null;
@@ -172,9 +193,9 @@ export const DefinitionWrapper = () => {
 
                     {/* Layout Tabs: Occupying the remaining 90% of the Middle Sub-Block Height */}
 
-                    <Tabs.Root defaultValue="overview">
+                    <Tabs.Root defaultValue="Adjustments">
                         <Tabs.List>
-                            <Tabs.Trigger value="overview">Adjustments</Tabs.Trigger>
+                            <Tabs.Trigger value="Adjustments">Adjustments</Tabs.Trigger>
                             <Tabs.Trigger value="tree">Tree</Tabs.Trigger>
                             <Tabs.Trigger value="list">List</Tabs.Trigger>
                         </Tabs.List>
@@ -187,10 +208,26 @@ export const DefinitionWrapper = () => {
                             }}
                         >
                             <Tabs.Content value="Adjustments">
-                                <Box width="100%">
+                                {/*<Box width="100%">*/}
+                                    <Text>Adjust the importance of chrachteristics, the weights will be
+                                        recalculated automatically.</Text>
                                     {/*<CalibrationOverview />*/}
                                     {/*<ImportanceAdjustment />*/}
-                                </Box>
+                                    <ProfileSelectionLogic
+                                        onProfileChange={handleProfileApply}
+                                        selectedProfile={selectedProfile}
+                                    />
+
+                                    <AdjustmentTableLogic
+                                        selectedProfile={
+                                            Array.isArray(selectedProfile) ? selectedProfile : undefined
+                                        }
+                                        isProfileApplied={isProfileApplied}
+                                        onResetApplied={handleReset}
+                                        mode= "Derive"
+                                    />
+
+                                {/*</Box>*/}
                             </Tabs.Content>
 
                             <Tabs.Content value="tree">

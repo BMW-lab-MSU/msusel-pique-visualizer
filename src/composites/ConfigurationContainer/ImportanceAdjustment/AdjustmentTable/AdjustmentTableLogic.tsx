@@ -17,6 +17,10 @@ interface TQIEntry {
   weights: Weights;
 }
 
+interface ChildchildNodeValues {
+  [key: string]: number;
+}
+
 interface AdjustmentTableProps {
   selectedProfile?: Profile[];
   isProfileApplied: boolean;
@@ -25,6 +29,7 @@ interface AdjustmentTableProps {
   onWeightsChange: (weights: Weights) => void; // Add this prop
   onImportanceChange: (weights: Weights) => void; // Add this prop
   onValuesChange: (weights: Weights) => void; // Add this prop
+  mode: string;
 }
 
 export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
@@ -35,8 +40,20 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   onWeightsChange,
   onImportanceChange,
   onValuesChange,
+  onResetApplied, mode,
 }) => {
-  const dataset = useAtomValue(State.dataset);
+
+
+  const dataset = (() => {
+    if (mode == "Evaluate") {
+      return useAtomValue(State.dataset);
+    } else if (mode == "Derive") {
+      return useAtomValue(State.definition);
+    } else {
+      return null;
+    }
+  }) ();
+
   if (!dataset) return null;
 
   const getInitialWeights = (
@@ -82,6 +99,22 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     return weights;
   };
 
+
+  const getInitialChildNodeValues = (dataset: schema.base.Schema): { [key: string]: number } => {
+    let values: ChildchildNodeValues={};
+
+    //TODO : Make it generalize to work with each layer in pique
+
+    Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
+      const entry = tqiEntry as TQIEntry;
+      Object.entries(entry.weights).forEach(([aspect, _]) => {
+        values[aspect] = dataset.factors.quality_aspects[aspect]?.value || 0;
+      });
+    });
+
+    return values;
+  };
+
   const sliderImportanceValues = useMemo(() => {
     const useDataset = !isProfileApplied;
     return getInitialWeights(selectedProfile, dataset, useDataset, SliderMode.importance);
@@ -108,6 +141,17 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     setCharacteristicValues(sliderCharacteristicValues);
   }, [sliderCharacteristicValues]);
 
+  // const n_nodes = Object.keys(values).length;
+  const childNodeValues = useMemo(() => {
+    return getInitialChildNodeValues(dataset);
+  }, [ dataset]);
+
+  const [nodeValues, setNodeValues] = useState<{[key: string]: number}>(childNodeValues);
+  useMemo(() => {
+    setNodeValues(getInitialChildNodeValues(dataset));
+  }, [childNodeValues]);
+
+
   const resetAllAdjustments = () => {
 
     var resetValues = getInitialWeights(selectedProfile, dataset, true, SliderMode.importance);
@@ -115,6 +159,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
 
     resetValues = getInitialWeights(selectedProfile, dataset, true, SliderMode.characteristics);
     setCharacteristicValues(resetValues);
+    setNodeValues(getInitialChildNodeValues(dataset));
 
     onResetApplied();
   };
@@ -135,7 +180,10 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     onWeightsChange(recalculatedWeights);
   }, [recalculatedWeights, onWeightsChange]);
 
-  useEffect(() => {
+
+
+
+useEffect(() => {
     onValuesChange(characteristicValues);
   }, [characteristicValues, onValuesChange]);
 
@@ -148,6 +196,10 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
       onImportanceChange(importanceValues);
     }
   };
+
+  const handleNodeValueChange = (name: string, newImportance: number) => {
+    setNodeValues((prev) => ({ ...prev, [name]: newImportance }));
+  }
 
   const handleDownload = () => {
     // Define the initial weights
@@ -196,18 +248,21 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
               dataset={dataset}
               characteristicValues={characteristicValues}
               importanceValues={importanceValues}
-              recalculatedWeights={recalculatedWeights}
-              updatedTQIRaw={updatedTQIRaw}
-              handleSliderChange={handleSliderChange}
-              resetAllAdjustments={resetAllAdjustments}
-              handleDownload={handleDownload}
-          />
+              nodeValues={nodeValues}
+          recalculatedWeights={recalculatedWeights}updatedTQIRaw={updatedTQIRaw}
+          handleSliderChange={handleSliderChange}
+          resetAllAdjustments={resetAllAdjustments}
+          handleDownload={handleDownload}
+          handleNodeValueChange={handleNodeValueChange}
+          mode={mode}
+        />
       </div>
       <div className="Visual">
         <TabsPanel
           dataset={dataset}
           values={values}
           recalculatedWeights={recalculatedWeights}
+          childNodeValues={nodeValues}
         />
       </div>
     </div>

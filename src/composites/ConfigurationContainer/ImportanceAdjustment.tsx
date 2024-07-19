@@ -121,6 +121,7 @@ export const ImportanceAdjustment = () => {
                   }
                   isProfileApplied={isProfileApplied}
                   onResetApplied={handleReset}
+                  mode= "Evaluate"
               />
 
               {/* Move the close and download button here */}
