@@ -19,11 +19,12 @@ function App() {
     <div
       style={{
         width: "100vw",
-        height: "90vh",
+        height: "100%",
       }}
     >
         {R.isNil(definition) ? <DefinitionUploader /> : <DefinitionWrapper />}
         {R.isNil(dataset) ? <FileUploader /> : <Wrapper />}
+
       {/* <ReactFlowProvider> */}
         {/* <TreeDisplayProto />
       </ReactFlowProvider> */}
