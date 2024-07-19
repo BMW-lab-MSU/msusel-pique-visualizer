@@ -9,7 +9,7 @@ import {stackOffsetWiggle} from "d3";
 
 
 // import "./plotStyle.css"
-import {PieContribution, SensitivityChart} from "./Plots/AdjustementPlots.tsx";
+import {PieContribution, SensitivityChart, RadarChart} from "./Plots/AdjustementPlots.tsx";
 import {Box, Flex, Text} from "@radix-ui/themes";
 import * as Slider from "@radix-ui/react-slider";
 
@@ -381,6 +381,9 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
                 <Tabs.Trigger className="TabsTrigger" value="tab3">
                     Recommendations
                 </Tabs.Trigger>
+                <Tabs.Trigger className="TabsTrigger" value="tab4">
+                    Radar
+                </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content className="TabsContent" value="tab1">
                 <p className="Text">Provides Information about Contributions</p>
@@ -438,6 +441,14 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
                         )}
                     </ol>
                 </div>
+            </Tabs.Content>
+            <Tabs.Content className="TabsContent" value="tab4">
+                <p className="Text">Provides Information about Utilization</p>
+                <RadarChart
+                    names={nodeNames}
+                    importance={importance}
+                    nodeValues={nodeValues}
+                />
             </Tabs.Content>
         </Tabs.Root>
     );
