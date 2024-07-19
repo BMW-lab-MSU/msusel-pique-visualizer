@@ -112,3 +112,47 @@ export function SensitivityChart({names, values, score,  sensitivity, x_ticks, t
         />
     );
 }
+
+export function RadarChart({names, importance, nodeValues}){
+    // const n_nodes = names.length
+    // const node_idx = Array.apply(null, {length: n_nodes}).map(Number.call, Number)
+
+    let traceData = [{
+        type: 'scatterpolar',
+        r: importance,
+        theta: names,
+        fill: 'toself',
+        name: 'Importance'
+    },
+    {
+        type: 'scatterpolar',
+        r: nodeValues,
+        theta: names,
+        fill: 'toself',
+        name: 'Scores',
+    }];
+
+
+
+    return(
+        <Plot
+            data = {traceData}
+            layout = {{
+                title: 'Radar',
+                polar: {
+                    radialaxis: {
+                    visible: true,
+                    range: [0, 1]
+                    }
+                }
+            }}
+
+        />
+    );
+
+}
+
+export  function pairWiseChart({names, importance, nodeValues}){
+
+
+}
