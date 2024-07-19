@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
 import React, { useState } from "react";
 import { State } from "./state";
-import { Box, IconButton, Tabs, Flex, Heading, Text } from "@radix-ui/themes";
+import {Box, IconButton, Tabs, Flex, Heading, Text, Button} from "@radix-ui/themes";
 import {
     GearIcon,
     PinLeftIcon,
@@ -28,6 +28,8 @@ import {AdjustmentTableLogic
 import ProfileSelectionLogic
     from "./composites/ConfigurationContainer/ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic.tsx";
 import {Profile} from "./types.ts";
+
+import {Requirements, ButtonRequirments} from "./composites/Calibration/Requirements/Requirements.tsx";
 
 export const DefinitionWrapper = () => {
     const definition = useAtomValue(State.definition);
@@ -161,7 +163,7 @@ export const DefinitionWrapper = () => {
                                 paddingRight: "50px",
                             }}
                         >
-
+                            <ButtonRequirments />
                             {/*<ButtonContainer />*/}
                         </Flex>
                     )}
@@ -242,54 +244,54 @@ export const DefinitionWrapper = () => {
                 </Flex>
 
                 {/* Right Configuration Bar */}
-                <Flex
-                    direction="column"
-                    style={{
-                        width: isRightSidebarOpen ? rightWidth : "50px",
-                        height: "100vh", // instead of 100%
-                        position: "fixed", //relative
-                        top: "0",
-                        right: "0",
-                        transition: "width 0.3s ease-in-out",
-                        zIndex: 1050,
-                        // flexShrink: 0,
-                        overflow: "hidden",
-                    }}
-                >
-                    {/* GearIcon to toggle the sidebar */}
-                    {/* Position to the left when sidebar is open, and keep on the right when closed */}
-                    <IconButton
-                        size="3"
-                        variant="soft"
-                        style={{
-                            position: "absolute",
-                            top: "10px",
-                            left: isRightSidebarOpen ? "10px" : "0px",
-                            // right: isRightSidebarOpen ? 'calc(100% - 40px)' : '10px',
-                            zIndex: 1050,
-                            transition: "right 0.3s ease-in-out", //left
-                        }}
-                        onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
-                    >
-                        <GearIcon />
-                    </IconButton>
+                {/*<Flex*/}
+                {/*    direction="column"*/}
+                {/*    style={{*/}
+                {/*        width: isRightSidebarOpen ? rightWidth : "50px",*/}
+                {/*        height: "100vh", // instead of 100%*/}
+                {/*        position: "fixed", //relative*/}
+                {/*        top: "0",*/}
+                {/*        right: "0",*/}
+                {/*        transition: "width 0.3s ease-in-out",*/}
+                {/*        zIndex: 1050,*/}
+                {/*        // flexShrink: 0,*/}
+                {/*        overflow: "hidden",*/}
+                {/*    }}*/}
+                {/*>*/}
+                {/*    /!* GearIcon to toggle the sidebar *!/*/}
+                {/*    /!* Position to the left when sidebar is open, and keep on the right when closed *!/*/}
+                {/*    <IconButton*/}
+                {/*        size="3"*/}
+                {/*        variant="soft"*/}
+                {/*        style={{*/}
+                {/*            position: "absolute",*/}
+                {/*            top: "10px",*/}
+                {/*            left: isRightSidebarOpen ? "10px" : "0px",*/}
+                {/*            // right: isRightSidebarOpen ? 'calc(100% - 40px)' : '10px',*/}
+                {/*            zIndex: 1050,*/}
+                {/*            transition: "right 0.3s ease-in-out", //left*/}
+                {/*        }}*/}
+                {/*        onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}*/}
+                {/*    >*/}
+                {/*        <GearIcon />*/}
+                {/*    </IconButton>*/}
 
-                    {/* Right Sidebar Content */}
-                    {isRightSidebarOpen && (
-                        <Flex
-                            style={{
-                                flexDirection: "column",
-                                padding: "10px",
-                                height: "100%",
-                                overflowY: "auto",
-                                paddingLeft: "50px",
-                                zIndex: 1040,
-                            }}
-                        >
-                            <ConfigurationContainer />
-                        </Flex>
-                    )}
-                </Flex>
+                {/*    /!* Right Sidebar Content *!/*/}
+                {/*    {isRightSidebarOpen && (*/}
+                {/*        <Flex*/}
+                {/*            style={{*/}
+                {/*                flexDirection: "column",*/}
+                {/*                padding: "10px",*/}
+                {/*                height: "100%",*/}
+                {/*                overflowY: "auto",*/}
+                {/*                paddingLeft: "50px",*/}
+                {/*                zIndex: 1040,*/}
+                {/*            }}*/}
+                {/*        >*/}
+                {/*            <ConfigurationContainer />*/}
+                {/*        </Flex>*/}
+                {/*    )}*/}
+                {/*</Flex>*/}
             </div>
         </div>
     );
