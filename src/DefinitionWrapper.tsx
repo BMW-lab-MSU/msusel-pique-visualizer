@@ -104,7 +104,7 @@ export const DefinitionWrapper = () => {
                     style={{ marginRight: "20px" }}
                 />
 
-                <Heading>PIQUE Calibration</Heading>
+                <Heading>PIQUE Tuner</Heading>
                 <img
                     src="https://raw.githubusercontent.com/MSUSEL/msusel-pique-visualizer/refactorZiyi/src/assets/PIQUE_svg.svg"
                     alt="PIQUE Logo"
