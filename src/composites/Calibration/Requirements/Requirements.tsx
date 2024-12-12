@@ -156,6 +156,8 @@ export function Requirements() {
     //     setImportance(Object.keys(names).map(key=> 0);
     // }, [names]);
 
+    // TODO: Pass the selected importance to main panel
+
     return(
       <Flex direction={"column"} align={"center"}>
           <Box width={"auto"}>
