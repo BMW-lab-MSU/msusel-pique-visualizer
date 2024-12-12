@@ -1,6 +1,6 @@
 import {Box, Button, Flex, HoverCard, IconButton, Link, Separator, Table, Text} from "@radix-ui/themes";
 import {Cross2Icon, InfoCircledIcon} from "@radix-ui/react-icons";
-import React, {useState} from "react";
+import React, {useMemo, useState} from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import ProfileSelectionLogic
     from "../../ConfigurationContainer/ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic.tsx";
@@ -14,6 +14,7 @@ import * as schema from "../../../data/schema.ts";
 import {useAtomValue} from "jotai/index";
 // import {base} from "../../../data/schema.ts";
 import {base} from "../../../data/definitionSchema.ts";
+
 
 interface Names{
     [key:string]: string;
@@ -31,7 +32,7 @@ const getInitialNames = (
     definition : schema.base.Schema,
 ): { [key: string]: string } => {
     let names : Names= {};
-    console.log(definition)
+    // console.log(definition)
     Object.entries(definition.factors.tqi).forEach(([_, tqiEntry]) => {
         const entry = tqiEntry as TQIEntry;
         Object.entries(entry.weights).forEach(([aspect, _]) => {
@@ -42,8 +43,19 @@ const getInitialNames = (
     return names;
 };
 
+function MaxValueFinder({ numbers }) {
+    const maxValue = Math.max(...numbers);
 
-export function ButtonRequirments(){
+    return (
+        <div>
+            <p>{maxValue}</p>
+        </div>
+    );
+}
+
+
+
+export function ButtonRequirement(){
     return (
         <Flex>
             <Box position={"relative"} left={"auto"} top={"auto"}>
@@ -128,14 +140,21 @@ export function ButtonRequirments(){
 }
 
 
+
+
 export function Requirements() {
 
     const definition = useAtomValue(State.definition);
 
-    console.log(definition);
+    // console.log(definition);
 
     const names = getInitialNames(definition);
-    console.log(names)
+    // console.log(names)
+
+    const [isoImportance, setIsoImportance] = useState(Object.keys(names).map(key=> names[key]));
+    // useMemo(() => {
+    //     setImportance(Object.keys(names).map(key=> 0);
+    // }, [names]);
 
     return(
       <Flex direction={"column"} align={"center"}>
@@ -218,6 +237,21 @@ export function Requirements() {
                                   </HoverCard.Content>
                               </HoverCard.Root>
                           </Table.ColumnHeaderCell>
+                          <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
+                              <Text>Importance </Text>
+                              <HoverCard.Root>
+                                  <HoverCard.Trigger>
+                                      <Link href="#">
+                                          <InfoCircledIcon />
+                                      </Link>
+                                  </HoverCard.Trigger>
+                                  <HoverCard.Content>
+                                      <Text as="div" style={{ maxWidth: 325 }}>
+                                          Absolute importance of each characteristic
+                                      </Text>
+                                  </HoverCard.Content>
+                              </HoverCard.Root>
+                          </Table.ColumnHeaderCell>
                       </Table.Row>
                       <Table.Row align={"center"}>
                           <Table.ColumnHeaderCell justify={"center"} >
@@ -259,6 +293,21 @@ export function Requirements() {
                           <Table.ColumnHeaderCell justify={"center"} >
                               <Text>-</Text>
                           </Table.ColumnHeaderCell>
+                          <Table.ColumnHeaderCell justify={"center"} >
+                              <Text>Max value </Text>
+                              <HoverCard.Root>
+                                  <HoverCard.Trigger>
+                                      <Link href="#">
+                                          <InfoCircledIcon />
+                                      </Link>
+                                  </HoverCard.Trigger>
+                                  <HoverCard.Content>
+                                      <Text as="div" style={{ maxWidth: 325 }}>
+                                          Maximum value of each row.
+                                      </Text>
+                                  </HoverCard.Content>
+                              </HoverCard.Root>
+                          </Table.ColumnHeaderCell>
                       </Table.Row>
                       <Table.Row align={"center"}>
                           <Table.ColumnHeaderCell>
@@ -275,6 +324,9 @@ export function Requirements() {
                           </Table.ColumnHeaderCell>
                           <Table.ColumnHeaderCell>
                               <Text>Using Output</Text>
+                          </Table.ColumnHeaderCell>
+                          <Table.ColumnHeaderCell>
+                              <Text>max()</Text>
                           </Table.ColumnHeaderCell>
                       </Table.Row>
                   </Table.Header>
@@ -379,7 +431,9 @@ export function SingleRequirementRow({nameAspect}){
                     </div>
                 </Box>
             </Table.Cell>
-
+            <Table.Cell>
+                <MaxValueFinder numbers={[primary, secondaryContent, secondaryMaintainer, indirect]} />
+            </Table.Cell>
         </Table.Row>
     );
 }
