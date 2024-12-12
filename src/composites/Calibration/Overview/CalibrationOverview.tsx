@@ -312,23 +312,23 @@ export  const CalibrationOverview =() =>{
                                 style={{ width: "100%" }}
                                 justify={"center"}
                             >
-                                <Box>
-                                    <Avatar
-                                        className="TQIAvatar"
-                                        size="5"
-                                        fallback={
-                                            tqiRiskLevel.value?.toFixed(
-                                                2
-                                            ) as NonNullable<React.ReactNode>
-                                        }
-                                        style={{
-                                            background: COLORS[tqiRiskLevel.level],
-                                        }}
-                                    />
-                                </Box>
-                                <Strong style={{ alignSelf: "center" }}>
-                                    Total Quality Index (TQI)
-                                </Strong>
+                                {/*<Box>*/}
+                                {/*    <Avatar*/}
+                                {/*        className="TQIAvatar"*/}
+                                {/*        size="5"*/}
+                                {/*        fallback={*/}
+                                {/*            tqiRiskLevel.value?.toFixed(*/}
+                                {/*                2*/}
+                                {/*            ) as NonNullable<React.ReactNode>*/}
+                                {/*        }*/}
+                                {/*        style={{*/}
+                                {/*            background: COLORS[tqiRiskLevel.level],*/}
+                                {/*        }}*/}
+                                {/*    />*/}
+                                {/*</Box>*/}
+                                {/*<Strong style={{ alignSelf: "center" }}>*/}
+                                {/*    Total Quality Index (TQI)*/}
+                                {/*</Strong>*/}
 
                             </Flex>
                         </Flex>
