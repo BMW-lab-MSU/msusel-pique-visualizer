@@ -163,7 +163,7 @@ export const DefinitionUploader = () => {
                     height="100"
                     style={{ marginRight: "20px" }}
                 />
-                <h1>PIQUE Calibrator</h1>
+                <h1>PIQUE Tuner</h1>
                 <img
                     src="https://raw.githubusercontent.com/MSUSEL/msusel-pique-visualizer/refactorZiyi/src/assets/PIQUE_svg.svg"
                     alt="PIQUE Logo"
