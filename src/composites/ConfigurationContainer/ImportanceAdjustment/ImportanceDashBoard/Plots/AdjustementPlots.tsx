@@ -105,9 +105,10 @@ export function SensitivityChart({names, values, score,  sensitivity, x_ticks, t
             layout={{
                 title: 'Sensitivity',
                 height: 500,
-                width: 450,
+                width: 650,
                 yaxis: {title: "Score", range:[0,1.1]},
-                xaxis: {title: "values", range:[0,1.1]}
+                xaxis: {title: "values", range:[0,1.1]},
+                uirevision: 'foo',
             }}
         />
     );
