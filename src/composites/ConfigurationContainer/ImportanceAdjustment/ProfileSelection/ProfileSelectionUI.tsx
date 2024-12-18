@@ -26,7 +26,7 @@ const ProfileSelectionUI: React.FC<ProfileSelectionUIProps> = ({
   return (
     <Flex direction={"column"} style={{ margin: "10px" }}>
       <Flex>
-        <Text size={"9"} color="brown"> (Optional) Profile Selection</Text>
+        <Text color="brown" > (Optional) Profile Selection</Text>
       </Flex>
       <Flex align={"start"} justify={"between"} gap={"7"} direction={"column"}>
         <Flex direction={"row"} align={"start"} justify={"start"} gap={"5"}>
