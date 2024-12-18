@@ -246,7 +246,7 @@ function StrategySelect({ID, selectValue, handleChange}){
         <label htmlFor={ID}>
             <p className="Text">Strategy</p>
             <select
-                name="selecStartegy"
+                name="selectStartegy"
                 value={selectValue}
                 onChange={e => handleChange(e.target.value)}
             >
@@ -259,6 +259,21 @@ function StrategySelect({ID, selectValue, handleChange}){
     );
 }
 
+function FunctionSelect({ID, selectValue, handleChange}){
+    return(
+      <label htmlFor={ID}>
+          <p className="Text"> Function</p>
+          <select
+              name="selectFcn"
+              value={selectValue}
+              onChange={e => handleChange(e.target.value)}
+              >
+              <option value="defaults"> Default (Linear)</option>
+              <option value="custom"> Custom</option>
+          </select>
+      </label>
+    );
+}
 
 interface AdjustmentSummaryProps {
     dataset: schema.base.Schema;
@@ -315,7 +330,8 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
     useMemo(() => {
         setNodeValues(Object.keys(childNodeValues).map(key=> childNodeValues[key]));
     }, [childNodeValues]);
-   
+
+    const fcnSelectID =useId();
     const [fcnName, setFcnName] = useState("defaults");
 
     const [normCoefficient, setNormCoefficient] = useState(
@@ -386,7 +402,7 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
                 </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content className="TabsContent" value="tab1">
-                <p className="Text">Provides Information about Contributions</p>
+                <p className="Text">Provides information about how each characteristics contribute to the final score</p>
                 <PieContribution
                     names={nodeNames}
                     contributions={contribution}
@@ -394,7 +410,7 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
             </Tabs.Content>
             <Tabs.Content className="TabsContent" value="tab2">
                 <div>
-                <p className="Text">Provides Information about sensitivity</p>
+                <p className="Text">Provides information about sensitivity of each characterstics to the score</p>
                 <SensitivityChart
                     names={nodeNames}
                     values={nodeValues}
@@ -447,7 +463,7 @@ export const TabsPanel: React.FC<AdjustmentSummaryProps> = ({
                 <RadarChart
                     names={nodeNames}
                     importance={importance}
-                    nodeValues={nodeValues}
+                    nodeValues={multVectors(nodeValues, importance)}
                 />
             </Tabs.Content>
         </Tabs.Root>
