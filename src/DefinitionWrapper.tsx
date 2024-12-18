@@ -29,7 +29,7 @@ import ProfileSelectionLogic
     from "./composites/ConfigurationContainer/ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic.tsx";
 import {Profile} from "./types.ts";
 
-import {Requirements, ButtonRequirments} from "./composites/Calibration/Requirements/Requirements.tsx";
+import {Requirements, ButtonRequirement} from "./composites/Calibration/Requirements/Requirements.tsx";
 
 export const DefinitionWrapper = () => {
     const definition = useAtomValue(State.definition);
@@ -163,7 +163,7 @@ export const DefinitionWrapper = () => {
                                 paddingRight: "50px",
                             }}
                         >
-                            <ButtonRequirments />
+                            <ButtonRequirement />
                             {/*<ButtonContainer />*/}
                         </Flex>
                     )}
