@@ -34,16 +34,16 @@ import { COLORS } from "../../Overview/PieChartColor";
 //     return obj && typeof obj === "object" && "weights" in obj;
 // }
 //
-const generateChartData = (riskData: [number[], string[][]] | null) => {
-    if (!riskData) return [];
-    const [riskCounts] = riskData;
-    return ["Severe", "High", "Medium", "Low", "Insignificant"].map(
-        (level, index) => ({
-            name: level,
-            Count: riskCounts[index],
-        })
-    );
-};
+// const generateChartData = (riskData: [number[], string[][]] | null) => {
+//     if (!riskData) return [];
+//     const [riskCounts] = riskData;
+//     return ["Severe", "High", "Medium", "Low", "Insignificant"].map(
+//         (level, index) => ({
+//             name: level,
+//             Count: riskCounts[index],
+//         })
+//     );
+// };
 
 
 export  const CalibrationOverview =() =>{
