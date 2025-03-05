@@ -17,6 +17,8 @@ import { OverviewTab } from "./composites/Overview/OverviewTab";
 import { LegendContainer } from "./composites/LegendContainer/Legend";
 import { TreeDisplay } from "./composites/TreeDisplay/TreeDisplay";
 import { ListDisplay } from "./composites/ListDisplay/ListDisplay";
+import { ListSelect} from "./composites/Calibration/ListSelect/ListSelect.tsx";
+
 
 import {CalibrationOverview} from "./composites/Calibration/Overview/CalibrationOverview.tsx";
 
@@ -30,10 +32,12 @@ import ProfileSelectionLogic
 import {Profile} from "./types.ts";
 
 import {Requirements, ButtonRequirement} from "./composites/Calibration/Requirements/Requirements.tsx";
+import {Tab} from "@chakra-ui/react";
+import {WeightMatrix} from "./composites/Calibration/WeightMatrix/WeightMatrix.tsx";
 
 export const DefinitionWrapper = () => {
-    const definition = useAtomValue(State.definition);
-    const dataset = useAtomValue(State.dataset);
+    // const definition = useAtomValue(State.definition);
+    // const dataset = useAtomValue(State.dataset);
 
 
     const [selectedProfile, setSelectedProfile] = useState<
@@ -57,18 +61,18 @@ export const DefinitionWrapper = () => {
     // if (!processedData) return null;
 
     const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
-    const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+    // const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
 
     const leftSidebarWidthExpanded = "25vw"; // 20% of the viewport width
-    const rightSidebarWidthExpanded = "30vw"; // 20% of the viewport width
+    // const rightSidebarWidthExpanded = "30vw"; // 20% of the viewport width
     const sidebarWidthCollapsed = "50px";
 
     const leftWidth = isLeftSidebarOpen
         ? leftSidebarWidthExpanded
         : sidebarWidthCollapsed;
-    const rightWidth = isRightSidebarOpen
-        ? rightSidebarWidthExpanded
-        : sidebarWidthCollapsed;
+    // const rightWidth = isRightSidebarOpen
+    //     ? rightSidebarWidthExpanded
+    //     : sidebarWidthCollapsed;
     // const middleWidth = `calc(100vw - (${leftWidth} + ${rightWidth}))`;
     const middleWidth = `calc(100vw - (${leftWidth})`;
 
@@ -200,6 +204,7 @@ export const DefinitionWrapper = () => {
                             <Tabs.Trigger value="Adjustments">Adjustments</Tabs.Trigger>
                             <Tabs.Trigger value="tree">Tree</Tabs.Trigger>
                             <Tabs.Trigger value="list">List</Tabs.Trigger>
+                            <Tabs.Trigger value="weight">Weight Matrix</Tabs.Trigger>
                         </Tabs.List>
 
                         {/* Tab Content with Overflow Handling */}
@@ -237,7 +242,11 @@ export const DefinitionWrapper = () => {
                             </Tabs.Content>
 
                             <Tabs.Content value="list">
-                                {/*<ListDisplay />*/}
+                                <ListSelect />
+                            </Tabs.Content>
+
+                            <Tabs.Content value="weight">
+                                <WeightMatrix />
                             </Tabs.Content>
                         </Box>
                     </Tabs.Root>
