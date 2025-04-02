@@ -205,6 +205,7 @@ export const DefinitionWrapper = () => {
                             <Tabs.Trigger value="tree">Tree</Tabs.Trigger>
                             <Tabs.Trigger value="list">List</Tabs.Trigger>
                             <Tabs.Trigger value="weight">Weight Matrix</Tabs.Trigger>
+                            <Tabs.Trigger value="size">LLM</Tabs.Trigger>
                         </Tabs.List>
 
                         {/* Tab Content with Overflow Handling */}
@@ -247,6 +248,9 @@ export const DefinitionWrapper = () => {
 
                             <Tabs.Content value="weight">
                                 <WeightMatrix />
+                            </Tabs.Content>
+                            <Tabs.Content value="size">
+                                LLM Training
                             </Tabs.Content>
                         </Box>
                     </Tabs.Root>

@@ -9,6 +9,8 @@ import { Box } from "@radix-ui/themes";
 import { TreeDisplayProto } from "./composites/TreeDisplayProto/TreeDisplayProto";
 import { ReactFlowProvider } from "reactflow";
 
+import  {ChatbotUI} from "./composites/Calibration/LLM/LlmExtractor.tsx"
+
 import {DefinitionUploader} from "./composites/Calibration/DefinitionUploader/DefinitionUploader.tsx";
 
 function App() {
@@ -28,6 +30,8 @@ function App() {
       {/* <ReactFlowProvider> */}
         {/* <TreeDisplayProto />
       </ReactFlowProvider> */}
+
+        <ChatbotUI/>
     </div>
   );
 }
