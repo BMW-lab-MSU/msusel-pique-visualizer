@@ -49,10 +49,11 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
             <Table.Cell align='center' justify={'center'}>
                 {characteristicValue.toFixed(2)}
             </Table.Cell>
-            <Table.Cell align='center' justify={'center'}>{(mode =="Evaluate") ? characteristicValue.toFixed(2)
-            : <Box style={{ position: 'relative', padding: '20px' }}>
+            <Table.Cell align='center' justify={'center'}>{
+                // (mode =="Evaluate") ? characteristicValue.toFixed(2):
+                <Box style={{ position: 'relative', padding: '20px' }}>
                     <Slider.Root
-                        value={[characteristicValue]}
+                        value={[characteristicSlider]}
                         onValueChange={(value) => onSliderChange(name, value[0], SliderMode.characteristics)}
                         min={0}
                         max={1}
@@ -63,8 +64,8 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
                         </Slider.Track>
                         <Slider.Thumb className="SliderThumb" />
                     </Slider.Root>
-                    <div style={{ position: 'absolute', top: '-2px', left: `${characteristicValue * 100}%`, transform: 'translateX(-50%)' }}>
-                        {characteristicValue.toFixed(2)}
+                    <div style={{ position: 'absolute', top: '-2px', left: `${characteristicSlider * 100}%`, transform: 'translateX(-50%)' }}>
+                        {characteristicSlider.toFixed(2)}
                     </div>
                 </Box>
             }</Table.Cell>
