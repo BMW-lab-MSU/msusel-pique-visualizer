@@ -1,5 +1,5 @@
 // AdjustmentTableUI.tsx
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import {
   Flex,
   Text,
@@ -11,7 +11,6 @@ import {
   Card,
   Avatar,
   Button,
-  TextField,
 } from "@radix-ui/themes";
 import {
   ResetIcon,
@@ -38,13 +37,13 @@ interface AdjustmentTableUIProps {
   dataset: schema.base.Schema;
   characteristicValues: { [key: string]: number };
   importanceValues: { [key: string]: number };
-  nodeValues: { [key: string]: number };
+  // nodeValues: { [key: string]: number };
   recalculatedWeights: { [key: string]: number };
   updatedTQIRaw : number;
   handleSliderChange: (name: string, newImportance: number, mode : SliderMode) => void;
   resetAllAdjustments: () => void;
   handleDownload: () => void;
-  handleNodeValueChange: (name: string, newImportance: number) => void;
+  // handleNodeValueChange: (name: string, newImportance: number) => void;
   mode: string;
 }
 
@@ -52,12 +51,14 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
   dataset,
   characteristicValues,
   importanceValues,
-    nodeValues,
+    // nodeValues,
   recalculatedWeights,
   updatedTQIRaw,
   handleSliderChange,
   resetAllAdjustments,
-  handleDownload, handleNodeValueChange, mode,
+  handleDownload,
+  // handleNodeValueChange,
+  mode,
 }) => {
   const precision = 4;
   const currentTQI =
@@ -81,7 +82,7 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
   // to apply the customized importance
   const [_, setTqiValue] = useAtom(State.tqiValue);
   const [__, setAdjustedImportance] = useAtom(State.adjustedImportance);
-  const [___, setAdjustedCharacteristic] = useState(dataset.factors.quality_aspects);
+  // const [___, setAdjustedCharacteristic] = useState(dataset.factors.quality_aspects);
 
   const handleApply = () => {
     console.log('dataset factors: ', dataset.factors);
@@ -89,12 +90,18 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
     setAdjustedImportance(recalculatedWeights); // Set adjustedImportance as recalculatedWeights
 
     // update each QA char value
-    let updatedQA : any = dataset.factors.quality_aspects;
-    updatedQA.map((e : any) => {
-      e.value = characteristicValues[e.name];
-    });
-
-    setAdjustedCharacteristic(updatedQA);
+    // TODO: Should the changes in char values be saved
+    // let updatedQA : any = dataset.factors.quality_aspects;
+    // // console.log('quality aspects: ', updatedQA);
+    // // updatedQA.map((e : any) => {
+    // //   e.value = characteristicValues[e.name];
+    // // });
+    // Object.entries(updatedQA).forEach((e : any) => {
+    //   // console.log('quality aspect: ', e);
+    //   e[1].value = characteristicValues[e[0]];
+    // });
+    // // console.log('updated quality aspects: ', updatedQA);
+    // setAdjustedCharacteristic(updatedQA);
   };
 
   return (
@@ -171,14 +178,14 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
                       dataset.factors.quality_aspects[name]?.description || ""
                     }
 
-                    characteristicValue={tqiEntry.value}
+                    characteristicValue={dataset.factors.quality_aspects[name]?.value || 0}
                     characteristicSlider={characteristicValues[name]}
 
                     weightValue={weight}
                     importanceSlider={importanceValues[name]}
                     recalculatedWeight={recalculatedWeights[name]}
                     onSliderChange={handleSliderChange}
-                    onNodeValueChange={handleNodeValueChange}
+                    // onNodeValueChange={handleNodeValueChange}
                     mode={mode}
                   />
                 );
