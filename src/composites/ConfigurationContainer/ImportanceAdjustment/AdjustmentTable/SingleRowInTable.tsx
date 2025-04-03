@@ -1,12 +1,12 @@
 import React from 'react';
-import { Table, HoverCard, Link, Text, Strong, Box, TextField } from '@radix-ui/themes';
+import { Table, HoverCard, Link, Text, Strong, Box} from '@radix-ui/themes';
 import * as Slider from '@radix-ui/react-slider';
 import '../../../Style/Slider.css';
 import { SliderMode } from './AdjustmentTableUI';
 
 interface SingleTableRowProps {
     name: string;
-    qualityAspectValue: number;
+    // qualityAspectValue: number;
     qualityAspectDescription: string;
     characteristicValue: number;
     characteristicSlider: number;
@@ -14,20 +14,22 @@ interface SingleTableRowProps {
     importanceSlider: number;
     recalculatedWeight: number;
     onSliderChange: (name: string, newImportance: number, mode : SliderMode) => void;
-    onNodeValueChange: (name: string, newNOdeValue: number) => void;
+    // onNodeValueChange: (name: string, newNOdeValue: number) => void;
     mode: string;
 }
 
 const SingleTableRow: React.FC<SingleTableRowProps> = ({
     name,
-    qualityAspectValue,
+    // qualityAspectValue,
     qualityAspectDescription,
     characteristicValue,
     characteristicSlider,
     weightValue,
     importanceSlider,
     recalculatedWeight,
-    onSliderChange, onNodeValueChange, mode,
+    onSliderChange,
+    // onNodeValueChange,
+    mode,
 }) => {
 
     return (
@@ -48,7 +50,7 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
             : <Box style={{ position: 'relative', padding: '20px' }}>
                     <Slider.Root
                         value={[characteristicValue]}
-                        onValueChange={(value) => onNodeValueChange(name, value[0])}
+                        onValueChange={(value) => onSliderChange(name, value[0], SliderMode.characteristics)}
                         min={0}
                         max={1}
                         step={0.01}
@@ -63,7 +65,6 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
                     </div>
                 </Box>
             }</Table.Cell>
-            <Table.Cell align='center' justify={'center'}>{weightValue.toFixed(2)}</Table.Cell> {/* Original weight value */}
             <Table.Cell align='center' justify={'center'}>
                 <Box style={{ position: 'relative', padding: '20px' }}>
                     <Slider.Root
