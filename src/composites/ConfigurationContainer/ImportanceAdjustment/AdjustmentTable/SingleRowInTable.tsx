@@ -110,6 +110,7 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
                 {recalculatedWeight.toFixed(2)}
             </Table.Cell>
             <Table.Cell align='center' justify={'center'}>
+                {/*TODO: Imapct calculation recheck*/}
             {Math.max(0, (characteristicSlider - recalculatedWeight)).toFixed(2)}
             </Table.Cell>
         </Table.Row>
