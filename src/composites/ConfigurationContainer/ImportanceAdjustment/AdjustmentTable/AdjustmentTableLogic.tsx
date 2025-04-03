@@ -1,13 +1,13 @@
 // AdjustmentTableLogic.tsx
 import { useAtomValue } from "jotai";
-import React, { useMemo, useState, useEffect, useCallback } from "react";
+import React, { useMemo, useState, useEffect} from "react";
 import { State } from "../../../../state";
 import { Profile } from "../../../../types";
 import * as schema from "../../../../data/schema";
 import { AdjustmentTableUI, SliderMode } from "./AdjustmentTableUI";
 
 import "./FigureContainer/Figure.css"
-import {TabsPanel} from "../ImportanceDashBoard/AdjustmentSummary.tsx";
+// import {TabsPanel} from "../ImportanceDashBoard/AdjustmentSummary.tsx";
 
 interface Weights {
   [key: string]: number;
@@ -17,9 +17,9 @@ interface TQIEntry {
   weights: Weights;
 }
 
-interface ChildchildNodeValues {
-  [key: string]: number;
-}
+// interface ChildchildNodeValues {
+//   [key: string]: number;
+// }
 
 interface AdjustmentTableProps {
   selectedProfile?: Profile[];
@@ -40,7 +40,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   onWeightsChange,
   onImportanceChange,
   onValuesChange,
-  onResetApplied, mode,
+  mode,
 }) => {
 
 
@@ -60,24 +60,24 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
     selectedProfile: Profile[] | undefined,
     dataset: schema.base.Schema,
     useDataset: boolean,
-    mode: SliderMode
+    sliderMode: SliderMode
   ): { [key: string]: number } => {
     let weights: Weights = {};
     if (selectedProfile && selectedProfile.length > 0 && !useDataset) {
 
       var profileWeights : any;
       // get either the importance or characteristic factor depending on mode
-      if (mode === SliderMode.importance){
+      if (sliderMode === SliderMode.importance){
         profileWeights = selectedProfile[0].importance;
       }
-      else if (mode === SliderMode.characteristics){
+      else if (sliderMode === SliderMode.characteristics){
         profileWeights = selectedProfile[0].characteristic;
       }
 
       weights = { ...profileWeights };
     }
     else {
-      if (mode === SliderMode.importance){
+      if (sliderMode === SliderMode.importance){
         Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
           const entry = tqiEntry as TQIEntry;
           Object.entries(entry.weights).forEach(([aspect, importance]) => {
@@ -87,10 +87,10 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
       }
 
       //dataset.factors.quality_aspects[name]?.value || 0
-      else if (mode === SliderMode.characteristics){
+      else if (sliderMode === SliderMode.characteristics){
         Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
           const entry = tqiEntry as TQIEntry;
-          Object.entries(entry.weights).forEach(([aspect, importance]) => {
+          Object.entries(entry.weights).forEach(([aspect, _]) => {
             weights[aspect] = dataset.factors.quality_aspects[aspect]?.value || 0;
           });
         });
@@ -100,20 +100,20 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   };
 
 
-  const getInitialChildNodeValues = (dataset: schema.base.Schema): { [key: string]: number } => {
-    let values: ChildchildNodeValues={};
-
-    //TODO : Make it generalize to work with each layer in pique
-
-    Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
-      const entry = tqiEntry as TQIEntry;
-      Object.entries(entry.weights).forEach(([aspect, _]) => {
-        values[aspect] = dataset.factors.quality_aspects[aspect]?.value || 0;
-      });
-    });
-
-    return values;
-  };
+  // const getInitialChildNodeValues = (dataset: schema.base.Schema): { [key: string]: number } => {
+  //   let values: ChildchildNodeValues={};
+  //
+  //   //TODO : Make it generalize to work with each layer in pique
+  //
+  //   Object.entries(dataset.factors.tqi).forEach(([_, tqiEntry]) => {
+  //     const entry = tqiEntry as TQIEntry;
+  //     Object.entries(entry.weights).forEach(([aspect, _]) => {
+  //       values[aspect] = dataset.factors.quality_aspects[aspect]?.value || 0;
+  //     });
+  //   });
+  //
+  //   return values;
+  // };
 
   const sliderImportanceValues = useMemo(() => {
     const useDataset = !isProfileApplied;
@@ -142,14 +142,14 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
   }, [sliderCharacteristicValues]);
 
   // const n_nodes = Object.keys(values).length;
-  const childNodeValues = useMemo(() => {
-    return getInitialChildNodeValues(dataset);
-  }, [ dataset]);
+  // const childNodeValues = useMemo(() => {
+  //   return getInitialChildNodeValues(dataset);
+  // }, [ dataset]);
 
-  const [nodeValues, setNodeValues] = useState<{[key: string]: number}>(childNodeValues);
-  useMemo(() => {
-    setNodeValues(getInitialChildNodeValues(dataset));
-  }, [childNodeValues]);
+  // const [nodeValues, setNodeValues] = useState<{[key: string]: number}>(childNodeValues);
+  // useMemo(() => {
+  //   setNodeValues(getInitialChildNodeValues(dataset));
+  // }, [childNodeValues]);
 
 
   const resetAllAdjustments = () => {
@@ -159,7 +159,7 @@ export const AdjustmentTableLogic: React.FC<AdjustmentTableProps> = ({
 
     resetValues = getInitialWeights(selectedProfile, dataset, true, SliderMode.characteristics);
     setCharacteristicValues(resetValues);
-    setNodeValues(getInitialChildNodeValues(dataset));
+    // setNodeValues(getInitialChildNodeValues(dataset));
 
     onResetApplied();
   };
@@ -197,9 +197,9 @@ useEffect(() => {
     }
   };
 
-  const handleNodeValueChange = (name: string, newImportance: number) => {
-    setNodeValues((prev) => ({ ...prev, [name]: newImportance }));
-  }
+  // const handleNodeValueChange = (name: string, newImportance: number) => {
+  //   setNodeValues((prev) => ({ ...prev, [name]: newImportance }));
+  // }
 
   const handleDownload = () => {
     // Define the initial weights
@@ -242,29 +242,30 @@ useEffect(() => {
 
   return (
 
-    <div className="Panels" style={{display:"grid", gridTemplateColumns: "repeat(2, 1fr)", gridGap:10}}>
-      <div className="Table">
+    // <div className="Panels" style={{display:"grid", gridTemplateColumns: "repeat(2, 1fr)", gridGap:10}}>
+    //   <div className="Table">
           <AdjustmentTableUI
-              dataset={dataset}
-              characteristicValues={characteristicValues}
-              importanceValues={importanceValues}
-              nodeValues={nodeValues}
-          recalculatedWeights={recalculatedWeights}updatedTQIRaw={updatedTQIRaw}
-          handleSliderChange={handleSliderChange}
-          resetAllAdjustments={resetAllAdjustments}
-          handleDownload={handleDownload}
-          handleNodeValueChange={handleNodeValueChange}
-          mode={mode}
+            dataset={dataset}
+            characteristicValues={characteristicValues}
+            importanceValues={importanceValues}
+            // nodeValues={nodeValues}
+            recalculatedWeights={recalculatedWeights}
+            updatedTQIRaw={updatedTQIRaw}
+            handleSliderChange={handleSliderChange}
+            resetAllAdjustments={resetAllAdjustments}
+            handleDownload={handleDownload}
+            // handleNodeValueChange={handleNodeValueChange}
+            mode={mode}
         />
-      </div>
-      <div className="Visual">
-        <TabsPanel
-          dataset={dataset}
-          values={values}
-          recalculatedWeights={recalculatedWeights}
-          childNodeValues={nodeValues}
-        />
-      </div>
-    </div>
+    //   </div>
+    //   <div className="Visual">
+    //     {/*<TabsPanel*/}
+    //     {/*  dataset={dataset}*/}
+    //     {/*  values={characteristicValues}*/}
+    //     {/*  recalculatedWeights={recalculatedWeights}*/}
+    //     {/*  childNodeValues={nodeValues}*/}
+    //     {/*/>*/}
+    //   </div>
+    // </div>
   );
 };
