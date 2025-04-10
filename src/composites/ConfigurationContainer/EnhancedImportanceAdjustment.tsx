@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Flex,
@@ -11,13 +11,14 @@ import {
   Separator,
   IconButton,
 } from "@radix-ui/themes";
-import { InfoCircledIcon, GearIcon, Cross2Icon } from "@radix-ui/react-icons";
+import {InfoCircledIcon, GearIcon, Cross2Icon, DropdownMenuIcon} from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
 import "../Style/Dialog.css";
 import {ChartData, TabWindow} from "./ImportanceAdjustment/PlotPanel/PlotPanel.tsx";
 import { AdjustmentTableLogic } from "./ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic";
 import ProfileSelectionLogic from "./ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic";
 import { Profile } from "../../types";
+import {ButtonRequirement} from "../Calibration/Requirements/Requirements.tsx"
 
 const COLORS = ['#41afaa', '#466eb4', '#aa998f', '#e6a532', '#d7642c', '#af4b91'];
 const x_tick_amt : number = 0.1;
@@ -223,6 +224,13 @@ export const EnhancedImportanceAdjustment = () => {
                   selectedProfile={selectedProfile}
                 />
                 <Separator my="3" size="4" />
+                <Box>
+                  <Text color='brown'>
+                    {" Requirement Standards"}
+                  </Text>
+                  {ButtonRequirement("Evaluate")}
+                </Box>
+                <Separator my="3" size="4" />
                 <AdjustmentTableLogic
                   selectedProfile={
                     Array.isArray(selectedProfile) ? selectedProfile : undefined
@@ -233,13 +241,14 @@ export const EnhancedImportanceAdjustment = () => {
                   onWeightsChange={setRecalculatedWeights}
                   onImportanceChange={setUpdatedImportance}
                   onValuesChange={setUpdatedValues}
+                  mode= "Evaluate"
                 />
               </Box>
 
               {/* Middle-right block: Tabs */}
               
 
-              <Box style={{ gridRow: "2", gridColumn: "2" }}>      
+              <Box style={{ gridRow: "2", gridColumn: "2" }}>
                 {TabWindow(pieData, chartData, updatedTQIRaw, x_tick, 1.0, strategy, setStrategy, strategyValues)}
               </Box>
 
