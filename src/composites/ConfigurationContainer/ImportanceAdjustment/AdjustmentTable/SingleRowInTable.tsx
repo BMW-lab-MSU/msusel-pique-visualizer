@@ -1,8 +1,17 @@
 import React from 'react';
-import { Table, HoverCard, Link, Text, Strong, Box} from '@radix-ui/themes';
+import { Table, HoverCard, Link, Text, Strong, Box, DropdownMenu, ScrollArea } from '@radix-ui/themes';
+// import { } from '@radix-ui';
+import {
+    HamburgerMenuIcon,
+    DotFilledIcon,
+    CheckIcon,
+    ChevronDownIcon,
+} from "@radix-ui/react-icons";
 import * as Slider from '@radix-ui/react-slider';
 import '../../../Style/Slider.css';
+
 import { SliderMode } from './AdjustmentTableUI';
+import DropdownMenuDemo from './DropDownContainer/DropDownContainer'
 
 interface SingleTableRowProps {
     name: string;
@@ -67,6 +76,8 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
                     <div style={{ position: 'absolute', top: '-2px', left: `${characteristicSlider * 100}%`, transform: 'translateX(-50%)' }}>
                         {characteristicSlider.toFixed(2)}
                     </div>
+                    <DropdownMenuDemo
+                    name={name}/>
                 </Box>
             }</Table.Cell>
             <Table.Cell align='center' justify={'center'}>
