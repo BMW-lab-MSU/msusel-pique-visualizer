@@ -153,7 +153,7 @@ export const EnhancedImportanceAdjustment = () => {
     <Flex direction="column" gap="3" align="start">
       <Box>
         <HoverCard.Root>
-          <HoverCard.Trigger asChild>
+          <HoverCard.Trigger>
             <Link href="#" size="3" style={{ margin: "0px" }}>
               <GearIcon /> Dynamic Importance Adjustment
             </Link>
