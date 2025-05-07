@@ -16,7 +16,7 @@ import {useAtomValue} from "jotai/index";
 // import {base} from "../../../data/schema.ts";
 import {base} from "../../../data/definitionSchema.ts";
 
-import {ChatbotUI, LlmExtractor} from "../LLM/LlmExtractor.tsx";
+import {LlmExtractor, sendPresetMessage} from "../LLM/LlmExtractor.tsx";
 
 
 interface Names{
@@ -755,9 +755,23 @@ export function LlmRequirements(mode:string) {
         setLlmRequirements((prev) => ({ ...prev, [name]: newValue }));
     }
 
-    const handleLlmButtonClick = () => {
+    const [message, setMessage] = useState<string>("");
+    const [response, setResponse] = useState<string>("");
 
-    }
+    const handleLlmButtonClick = () => {
+        const preamble = 'Given the following requirements for each of the quality characteristics for a software product, give a relative score between 1 and 10 for each characteristic. ';
+        const userEntries = Object.entries(llmRequirements)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(', ');
+        const concatenatedResults = preamble + userEntries;
+        setMessage(concatenatedResults);
+        console.log( concatenatedResults);
+
+        sendPresetMessage(concatenatedResults, setResponse);
+
+        console.log(response);
+    };
+
 
     // TODO: Pass the selected importance to main panel
 
@@ -829,16 +843,14 @@ export function LlmRequirements(mode:string) {
                 </Table.Root>
             </Box>
             <Box width={"auto"}>
-                <Button size="2" onClick={() => {}} > LLM Training </Button>
-                <LlmExtractor/>
+                <Button size="2" onClick={handleLlmButtonClick} color={"indigo"}> LLM Training </Button>
+                {/*<LlmExtractor/>*/}
             </Box>
         </Grid>
     );
 }
 
 export function LlmSingleRequirementRow({name , message  , onMessageChange, llmImportance}){
-
-    // let [message, setMessage] = useState('');
 
     return(
         <Table.Row>
@@ -848,13 +860,20 @@ export function LlmSingleRequirementRow({name , message  , onMessageChange, llmI
             <Table.Cell>
                     <Flex direction="column" gap="3">
                         <Box >
-                            <TextField.Root>
-                                <TextField.Input
-                                    value={message}
-                                    onChange={(e) => onMessageChange(name,  e.target.value)}
-                                    placeholder="Requirement Description"
-                                />
-                            </TextField.Root>
+                            {/*<TextField.Root>*/}
+                            {/*    <TextField.Input*/}
+                            {/*        value={message}*/}
+                            {/*        onChange={(e) => onMessageChange(name,  e.target.value)}*/}
+                            {/*        placeholder="Requirement Description"*/}
+                            {/*    />*/}
+                            {/*</TextField.Root>*/}
+                            <textarea name={"message"}
+                                      rows={4}
+                                      cols={40}
+                                      value={message}
+                                      onChange={(e) => onMessageChange(name,  e.target.value)}
+                                      placeholder="Requirement Description"
+                            />
                         </Box>
                     </Flex>
             </Table.Cell>
