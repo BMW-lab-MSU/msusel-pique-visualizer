@@ -776,13 +776,13 @@ export function LlmRequirements(mode:string) {
     // TODO: Pass the selected importance to main panel
 
     return(
-        <Grid columns={"3"} gap="3" width={"auto"}>
+        <Grid columns={"2"} gap="3" width={"auto"}>
             <Box width={"auto"}>
                 <Table.Root variant="surface" >
                     <Table.Header>
                         <Table.Row align={"center"}>
                             <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
-                                <Text>Users </Text>
+                                <Text>Aspects </Text>
                                 <HoverCard.Root>
                                     <HoverCard.Trigger>
                                         <Link href="#">
@@ -873,6 +873,8 @@ export function LlmSingleRequirementRow({name , message  , onMessageChange, llmI
                                       value={message}
                                       onChange={(e) => onMessageChange(name,  e.target.value)}
                                       placeholder="Requirement Description"
+                                      // defaultValue={"Not Applicable"}
+                                      id = {name}
                             />
                         </Box>
                     </Flex>
