@@ -109,6 +109,26 @@ export const sendPresetMessage = async (message, setResponse) => {
         "stream": false
     };
 
+    const extractScores = (text: string): { [key: string]: number } => {
+        const pattern = /(\d+\.\s+[^:]+):\s+(\d+\/10|No score can be provided for this requirement as no description was given\.)/g;
+        let matches: RegExpExecArray | null;
+
+        // Create a dictionary to store the results
+        const scores: { [key: string]: number } = {};
+
+        while ((matches = pattern.exec(text)) !== null) {
+            const characteristic = matches[1].trim();
+            const scoreText = matches[2];
+
+            // Extract the numerator if it exists, otherwise assign 0
+            const score = (/\d+\/10/.test(scoreText)) ? parseInt(scoreText.split('/')[0], 10) : 0;
+            scores[characteristic] = score;
+        }
+
+        return scores;
+    };
+
+
     try {
         const res = await axios.post('http://127.0.0.1:11434/api/chat', payload);
         // Optionally, you can handle the response here if needed
