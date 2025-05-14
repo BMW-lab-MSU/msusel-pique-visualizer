@@ -566,7 +566,7 @@ export function CwrfRequirements(mode:string) {
                                 </HoverCard.Root>
                             </Table.ColumnHeaderCell>
                             <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
-                                <Text>SNetwork </Text>
+                                <Text>Network </Text>
                                 <HoverCard.Root>
                                     <HoverCard.Trigger>
                                         <Link href="#">
