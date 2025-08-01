@@ -17,6 +17,7 @@ import { ClassifyNestedObjRiskLevel } from "./ClassifyNestedObjRiskLevel";
 import { COLORS } from "./PieChartColor";
 import SectionComponent from "./SectionComponent";
 import "@radix-ui/colors/violet.css";
+import { getRectOfNodes } from "reactflow";
 
 interface Impact {
   aspectName: string;
@@ -253,7 +254,8 @@ export const OverviewTab = () => {
       else if (value <= 0.8) return "Medium";
       else if (value <= 1.5) return "High";
       else return "Severe";
-    } else {
+    } 
+    else {
       if (value >= 0.8) return "Insignificant";
       else if (value > 0.6) return "Low";
       else if (value > 0.4) return "Medium";
@@ -261,6 +263,8 @@ export const OverviewTab = () => {
       else return "Severe";
     }
   }
+
+  console.log("tqi risk color: ", tqiRiskLevel.value)
 
   return (
     <Flex direction={"row"} gap={"3"}>
@@ -292,16 +296,14 @@ export const OverviewTab = () => {
               >
                 <Box>
                   <Avatar
-                    className="TQIAvatar"
+                    //className="TQIAvatar"
+                    className={getValueRisk(tqiRiskLevel.value, false)}
                     size="5"
                     fallback={
                       tqiRiskLevel.value?.toFixed(
                         3
                       ) as NonNullable<React.ReactNode>
                     }
-                    style={{
-                      background: COLORS[tqiRiskLevel.level],
-                    }}
                   />
                 </Box>
 
@@ -344,17 +346,10 @@ export const OverviewTab = () => {
                           2
                         ) as NonNullable<React.ReactNode>
                     }
+                    className={getValueRisk(topProblematicQualityAspects.at(0)?.details.value, false)}
                     size={"4"}
                     style={{
-                      width: "60px",
-                      background:
-                        COLORS[
-                          getValueRisk(
-                            topProblematicQualityAspects.at(0)?.details
-                              .value as number,
-                            false
-                          )
-                        ],
+                      width: "60px"
                     }}
                   />
                 </Flex>
@@ -368,17 +363,10 @@ export const OverviewTab = () => {
                           2
                         ) as NonNullable<React.ReactNode>
                     }
+                    className={getValueRisk(topProblematicProductFactors.at(0).details.value, false)}
                     size={"4"}
                     style={{
-                      width: "60px",
-                      background:
-                        COLORS[
-                          getValueRisk(
-                            topProblematicProductFactors.at(0)?.details
-                              .value as number,
-                            false
-                          )
-                        ],
+                      width: "60px"
                     }}
                   />
                 </Flex>
@@ -392,17 +380,10 @@ export const OverviewTab = () => {
                           2
                         ) as NonNullable<React.ReactNode>
                     }
+                    className={getValueRisk(topProblematicMeasures.at(0)?.details.value, false)}
                     size={"4"}
                     style={{
-                      width: "60px",
-                      background:
-                        COLORS[
-                          getValueRisk(
-                            topProblematicMeasures.at(0)?.details
-                              .value as number,
-                            false
-                          )
-                        ],
+                      width: "60px"
                     }}
                   />
                 </Flex>
@@ -416,17 +397,10 @@ export const OverviewTab = () => {
                           2
                         ) as NonNullable<React.ReactNode>
                     }
+                    className={getValueRisk(topProblematicDiagnostics.at(0)?.details.value, true)}
                     size={"4"}
                     style={{
                       width: "60px",
-                      background:
-                        COLORS[
-                          getValueRisk(
-                            topProblematicDiagnostics.at(0)?.details
-                              .value as number,
-                            true
-                          )
-                        ],
                     }}
                   />
                 </Flex>
