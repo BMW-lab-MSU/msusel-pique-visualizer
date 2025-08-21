@@ -1,7 +1,8 @@
 import {Grid, Box, Button, Flex, HoverCard, IconButton, Link, Separator, Table, Text, TextField} from "@radix-ui/themes";
-// import * as TextField from '@radix-ui/themes';
-import {Cross2Icon, InfoCircledIcon} from "@radix-ui/react-icons";
-import React, {useMemo, useState} from "react";
+import * as Label from '@radix-ui/react-label';
+import '@radix-ui/themes/styles.css';
+import {Cross2Icon, DownloadIcon, InfoCircledIcon, MagicWandIcon, ResetIcon} from "@radix-ui/react-icons";
+import React, {useEffect, useMemo, useState} from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import ProfileSelectionLogic
     from "../../ConfigurationContainer/ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic.tsx";
@@ -17,6 +18,8 @@ import {useAtomValue} from "jotai/index";
 import {base} from "../../../data/definitionSchema.ts";
 
 import {LlmExtractor, sendPresetMessage} from "../LLM/LlmExtractor.tsx";
+import {SliderMode} from "../../ConfigurationContainer/ImportanceAdjustment/AdjustmentTable/AdjustmentTableUI.tsx";
+import {values} from "ramda";
 
 
 interface Names{
@@ -29,6 +32,19 @@ interface Weights {
 
 interface TQIEntry {
     weights: Weights;
+}
+
+interface ISOEntry {
+    primary: number;
+    secondaryContent: number;
+    secondaryMaintainer: number;
+    indirect: number;
+    maxVal: number;
+    notes: string;
+}
+
+interface ISOEntries {
+    [key: string]: ISOEntry;
 }
 
 const getInitialNames = (
@@ -46,6 +62,30 @@ const getInitialNames = (
     return names;
 };
 
+const setInitialValues =(names:Names):{
+    [key: string]: number } => {
+    let values : Weights= {};
+    Object.keys(names).map(key=> {values[key] = 0;});
+    return values;
+};
+
+const setInitialISOValues = (names: Names): {
+    [key: string]: ISOEntry} => {
+    let entries : ISOEntries = {};
+    Object.keys(names).map(key=> {
+        let entry: ISOEntry = {
+            indirect: 0,
+            maxVal: 0,
+            notes: "",
+            primary: 0,
+            secondaryContent: 0,
+            secondaryMaintainer: 0
+        };
+        entries[key] = entry;
+    });
+    return entries;
+};
+
 function MaxValueFinder({ numbers }) {
     const maxValue = Math.max(...numbers);
 
@@ -54,11 +94,25 @@ function MaxValueFinder({ numbers }) {
             <p>{maxValue}</p>
         </div>
     );
+    // return maxValue;
+}
+
+function MaxValue(numbers){
+    return Math.max(...numbers);
 }
 
 
 
-export function ButtonRequirement(mode:string){
+
+export function ButtonRequirement(mode:string) {
+
+    const [reqImportance, setReqImportance] = useState<Weights>();
+
+    const handleImportanceApply = (() =>{
+        setReqImportance(undefined);
+    });
+
+
     return (
         <Flex>
             <Box position={"relative"} left={"auto"} top={"auto"}>
@@ -84,6 +138,8 @@ export function ButtonRequirement(mode:string){
                             <Separator my="3" size="4" />
 
                             {IsoRequirements(mode)}
+                            <Separator my="3" size="4" />
+
 
                             <Separator my="3" size="4" />
 
@@ -200,290 +256,401 @@ export function IsoRequirements(mode:string) {
 
     // console.log(definition);
 
-    const names = getInitialNames(definition);
+    const names : Names = getInitialNames(definition);
     // console.log(names)
 
-    const [isoImportance, setIsoImportance] = useState(Object.keys(names).map(key=> names[key]));
+    // const [isoImportance, setIsoImportance] = useState<Weights>(setInitialValues(names));
     // useMemo(() => {
     //     setImportance(Object.keys(names).map(key=> 0);
     // }, [names]);
 
+    // const handleIsoImportanceChange =(name: string, newImportance) => {
+    //     setIsoImportance((prev) => ({ ...prev, [name]: newImportance }));
+    // };
+
+    const [isoImportance, setIsoImportance] = useState<ISOEntries>(setInitialISOValues(names));
+
+
+    const handleIsoImportanceChange = (name: string, updatedEntry : ISOEntry)=>{
+        const numbers = [updatedEntry.primary,
+            updatedEntry.secondaryContent,
+            updatedEntry.secondaryMaintainer,
+            updatedEntry.indirect];
+
+        let newValues : ISOEntry = updatedEntry;
+        newValues.maxVal=   (MaxValue(numbers));
+        setIsoImportance((prev) => ({ ...prev, [name]: newValues }));
+
+        console.log(isoImportance);
+    };
+
+
+
+    const [profileName, setProfileName] = useState<string>("Sample Name");
+
+    const handleProfileNameChange =(newName: string) => {
+        setProfileName(newName);
+    };
+
+    const onResetHandle = ()=>{
+        setProfileName("Sample Name");
+        setIsoImportance(setInitialISOValues(names));
+    };
+
+    // const onApplyHandle = ()=>{
+    //
+    // }
+
+    // Function to handle the download action
+    const handleDownload = () => {
+        const dataToDownload = isoImportance;
+
+        const json = JSON.stringify(dataToDownload, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download =  profileName+ " Profile.json"; // todo: implement naming formats to indicate what are changed.
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+
+
     // TODO: Pass the selected importance to main panel
 
     return(
-      <Flex direction={"column"} align={"center"}>
-          <Box width={"auto"}>
-              <Table.Root variant="surface" >
-                  <Table.Header>
-                      <Table.Row align={"center"}>
-                          <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
-                              <Text>Users </Text>
-                              <HoverCard.Root>
-                                  <HoverCard.Trigger>
-                                      <Link href="#">
-                                          <InfoCircledIcon />
-                                      </Link>
-                                  </HoverCard.Trigger>
-                                  <HoverCard.Content>
-                                      <Text as="div" style={{ maxWidth: 325 }}>
-                                          Stakeholders which the needs are considered.
-                                      </Text>
-                                  </HoverCard.Content>
-                              </HoverCard.Root>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
-                              <Text>Primary Users </Text>
-                              <HoverCard.Root>
-                                  <HoverCard.Trigger>
-                                      <Link href="#">
-                                          <InfoCircledIcon />
-                                      </Link>
-                                  </HoverCard.Trigger>
-                                  <HoverCard.Content>
-                                      <Text as="div" style={{ maxWidth: 325 }}>
-                                          Person who interacts with the system to achieve the primary goals.
-                                      </Text>
-                                  </HoverCard.Content>
-                              </HoverCard.Root>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
-                              <Text>Secondary Users </Text>
-                              <HoverCard.Root>
-                                  <HoverCard.Trigger>
-                                      <Link href="#">
-                                          <InfoCircledIcon />
-                                      </Link>
-                                  </HoverCard.Trigger>
-                                  <HoverCard.Content>
-                                      <Text as="div" style={{ maxWidth: 325 }}>
-                                          Users who provide support.
-                                      </Text>
-                                  </HoverCard.Content>
-                              </HoverCard.Root>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
-                              <Text>Secondary Users </Text>
-                              <HoverCard.Root>
-                                  <HoverCard.Trigger>
-                                      <Link href="#">
-                                          <InfoCircledIcon />
-                                      </Link>
-                                  </HoverCard.Trigger>
-                                  <HoverCard.Content>
-                                      <Text as="div" style={{ maxWidth: 325 }}>
-                                          Users who provide support.
-                                      </Text>
-                                  </HoverCard.Content>
-                              </HoverCard.Root>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
-                              <Text>Indirect Users </Text>
-                              <HoverCard.Root>
-                                  <HoverCard.Trigger>
-                                      <Link href="#">
-                                          <InfoCircledIcon />
-                                      </Link>
-                                  </HoverCard.Trigger>
-                                  <HoverCard.Content>
-                                      <Text as="div" style={{ maxWidth: 325 }}>
-                                          Person who receives output, but not interact with the system.
-                                      </Text>
-                                  </HoverCard.Content>
-                              </HoverCard.Root>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
-                              <Text>Importance </Text>
-                              <HoverCard.Root>
-                                  <HoverCard.Trigger>
-                                      <Link href="#">
-                                          <InfoCircledIcon />
-                                      </Link>
-                                  </HoverCard.Trigger>
-                                  <HoverCard.Content>
-                                      <Text as="div" style={{ maxWidth: 325 }}>
-                                          Absolute importance of each characteristic
-                                      </Text>
-                                  </HoverCard.Content>
-                              </HoverCard.Root>
-                          </Table.ColumnHeaderCell>
-                      </Table.Row>
-                      <Table.Row align={"center"}>
-                          <Table.ColumnHeaderCell justify={"center"} >
-                              <Text>Sub users</Text>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell justify={"center"} >
-                              <Text>-</Text>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell justify={"center"} >
-                              <Text>Content Provider </Text>
-                              <HoverCard.Root>
-                                  <HoverCard.Trigger>
-                                      <Link href="#">
-                                          <InfoCircledIcon />
-                                      </Link>
-                                  </HoverCard.Trigger>
-                                  <HoverCard.Content>
-                                      <Text as="div" style={{ maxWidth: 325 }}>
-                                          Content Provider, system manager/administrator, security manager.
-                                      </Text>
-                                  </HoverCard.Content>
-                              </HoverCard.Root>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell justify={"center"}>
-                              <Text>Maintainer </Text>
-                              <HoverCard.Root>
-                                  <HoverCard.Trigger>
-                                      <Link href="#">
-                                          <InfoCircledIcon />
-                                      </Link>
-                                  </HoverCard.Trigger>
-                                  <HoverCard.Content>
-                                      <Text as="div" style={{ maxWidth: 325 }}>
-                                          Maintainer, analyzer, porter, installer.
-                                      </Text>
-                                  </HoverCard.Content>
-                              </HoverCard.Root>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell justify={"center"} >
-                              <Text>-</Text>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell justify={"center"} >
-                              <Text>Max value </Text>
-                              <HoverCard.Root>
-                                  <HoverCard.Trigger>
-                                      <Link href="#">
-                                          <InfoCircledIcon />
-                                      </Link>
-                                  </HoverCard.Trigger>
-                                  <HoverCard.Content>
-                                      <Text as="div" style={{ maxWidth: 325 }}>
-                                          Maximum value of each row.
-                                      </Text>
-                                  </HoverCard.Content>
-                              </HoverCard.Root>
-                          </Table.ColumnHeaderCell>
-                      </Table.Row>
-                      <Table.Row align={"center"}>
-                          <Table.ColumnHeaderCell>
-                              <Text>Needs</Text>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell>
-                              <Text>Interacting</Text>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell>
-                              <Text>Interacting</Text>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell>
-                              <Text>Maintaining or porting</Text>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell>
-                              <Text>Using Output</Text>
-                          </Table.ColumnHeaderCell>
-                          <Table.ColumnHeaderCell>
-                              <Text>max()</Text>
-                          </Table.ColumnHeaderCell>
-                      </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                      {Object.keys(names).map(idx => (
-                                    <IsoSingleRequirementRow key={idx} nameAspect= {idx} />
-                      ))}
-                  </Table.Body>
-              </Table.Root>
-          </Box>
-      </Flex>
+        <Flex direction={"column"} align={"center"}>
+            <div
+                style={{
+                    display: "flex",
+                    padding: "0 20px",
+                    flexWrap: "wrap",
+                    gap: 15,
+                    alignItems: "center",
+                }}
+            >
+                <Text size="2" color={"brown"}> Requirements Profile Name:</Text>
+                <input
+                    className="Input"
+                    type="text"
+                    id="profileName"
+                    value = {profileName}
+                    // defaultValue="Sample Name"
+                    onChange={e => handleProfileNameChange(e.target.value)}
+                />
+            </div>
+
+            <Separator my="3" size="4"/>
+
+            <Box width={"auto"}>
+                <Table.Root variant="surface">
+                    <Table.Header>
+                        <Table.Row align={"center"}>
+                            <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
+                                <Text>Users </Text>
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger>
+                                        <Link href="#">
+                                            <InfoCircledIcon/>
+                                        </Link>
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content>
+                                        <Text as="div" style={{maxWidth: 325}}>
+                                            Stakeholders which the needs are considered.
+                                        </Text>
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
+                                <Text>Primary Users </Text>
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger>
+                                        <Link href="#">
+                                            <InfoCircledIcon/>
+                                        </Link>
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content>
+                                        <Text as="div" style={{maxWidth: 325}}>
+                                            Person who interacts with the system to achieve the primary goals.
+                                        </Text>
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
+                                <Text>Secondary Users </Text>
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger>
+                                        <Link href="#">
+                                            <InfoCircledIcon/>
+                                        </Link>
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content>
+                                        <Text as="div" style={{maxWidth: 325}}>
+                                            Users who provide support.
+                                        </Text>
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
+                                <Text>Secondary Users </Text>
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger>
+                                        <Link href="#">
+                                            <InfoCircledIcon/>
+                                        </Link>
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content>
+                                        <Text as="div" style={{maxWidth: 325}}>
+                                            Users who provide support.
+                                        </Text>
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
+                                <Text>Indirect Users </Text>
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger>
+                                        <Link href="#">
+                                            <InfoCircledIcon/>
+                                        </Link>
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content>
+                                        <Text as="div" style={{maxWidth: 325}}>
+                                            Person who receives output, but not interact with the system.
+                                        </Text>
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
+                                <Text>Importance </Text>
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger>
+                                        <Link href="#">
+                                            <InfoCircledIcon/>
+                                        </Link>
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content>
+                                        <Text as="div" style={{maxWidth: 325}}>
+                                            Absolute importance of each characteristic
+                                        </Text>
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Table.ColumnHeaderCell>
+                        </Table.Row>
+                        <Table.Row align={"center"}>
+                            <Table.ColumnHeaderCell justify={"center"}>
+                                <Text>Sub users</Text>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"}>
+                                <Text>-</Text>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"}>
+                                <Text>Content Provider </Text>
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger>
+                                        <Link href="#">
+                                            <InfoCircledIcon/>
+                                        </Link>
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content>
+                                        <Text as="div" style={{maxWidth: 325}}>
+                                            Content Provider, system manager/administrator, security manager.
+                                        </Text>
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"}>
+                                <Text>Maintainer </Text>
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger>
+                                        <Link href="#">
+                                            <InfoCircledIcon/>
+                                        </Link>
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content>
+                                        <Text as="div" style={{maxWidth: 325}}>
+                                            Maintainer, analyzer, porter, installer.
+                                        </Text>
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"}>
+                                <Text>-</Text>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"}>
+                                <Text>Max value </Text>
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger>
+                                        <Link href="#">
+                                            <InfoCircledIcon/>
+                                        </Link>
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content>
+                                        <Text as="div" style={{maxWidth: 325}}>
+                                            Maximum value of each row.
+                                        </Text>
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Table.ColumnHeaderCell>
+                        </Table.Row>
+                        <Table.Row align={"center"}>
+                            <Table.ColumnHeaderCell>
+                                <Text>Needs</Text>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell>
+                                <Text>Interacting</Text>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell>
+                                <Text>Interacting</Text>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell>
+                                <Text>Maintaining or porting</Text>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell>
+                                <Text>Using Output</Text>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell>
+                                <Text>max()</Text>
+                            </Table.ColumnHeaderCell>
+                        </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                        {Object.keys(names).map(idx => (
+                            <IsoSingleRequirementRow key={idx} name={idx} values={isoImportance[idx]} handleChange={handleIsoImportanceChange}/>
+                        ))}
+                    </Table.Body>
+                </Table.Root>
+            </Box>
+            <Separator/>
+            <Flex
+                direction={"row"}
+                align={"center"}
+                justify="center"
+                style={{width: "100%"}}
+            >
+                <Box style={{flexBasis: "25%"}}>
+                    <Button
+                        variant="outline"
+                        // onClick={handleApply}
+                        style={{width: "100%", height: "30px"}}
+                        color="gray"
+                    >
+                        <MagicWandIcon width="16" height="16"/>
+                        Apply
+                    </Button>
+                </Box>
+                <Box style={{flexBasis: "25%"}}>
+                    <Button
+                        variant="surface"
+                        onClick={onResetHandle}
+                        style={{width: "100%", height: "30px"}}
+                        color="gray"
+                    >
+                        <ResetIcon width="16" height="16"/>
+                        Reset
+                    </Button>
+                </Box>
+                <Box style={{flexBasis: "25%"}}>
+                    <Button
+                        variant={"surface"}
+                        onClick={handleDownload}
+                        style={{width: "100%", height: "30px"}}
+                        color="gray"
+                    >
+                        <DownloadIcon width="16" height="16"/>
+                        Download
+                    </Button>
+                </Box>
+            </Flex>
+
+        </Flex>
     );
 }
 
-export function IsoSingleRequirementRow({nameAspect}){
+interface SliderParaProp {
+    paraName: string;
+    paraValue: number;
+    onChange: (name: string, newValue: number) => void;
+}
 
-    let [primary, setPrimary] = useState(0);
-    let [secondaryContent, setSecondaryContent] = useState(0);
-    let [secondaryMaintainer, setSecondaryMaintainer] = useState(0);
-    let [indirect, setIndirect] = useState(0);
+
+const SliderPara : React.FC<SliderParaProp>= ({paraName , paraValue , onChange}) => {
     return(
-        <Table.Row key={nameAspect}>
+        <Box style={{ position: 'relative', padding: '20px' }}>
+            <Slider.Root
+                value={[paraValue]}
+                onValueChange={(val) => {onChange(paraName, val[0])}}
+                min={0}
+                max={1}
+                step={0.01}
+                className="SliderRoot">
+                <Slider.Track className="SliderTrack">
+                    <Slider.Range className="SliderRange" />
+                </Slider.Track>
+                <Slider.Thumb className="SliderThumb" />
+            </Slider.Root>
+            <div style={{ position: 'absolute', top: '-2px', left: `${paraValue * 100}%`, transform: 'translateX(-50%)' }}>
+                {paraValue.toFixed(2)}
+            </div>
+        </Box>
+    );
+}
+
+
+interface SingleRowProp {
+    name: string;
+    values: ISOEntry;
+    handleChange: (name: string, newImportance: ISOEntry) => void;
+}
+
+const IsoSingleRequirementRow: React.FC<SingleRowProp> = ({name, values, handleChange}) => {
+
+    const onSliderChange = (paraName: string, value: number ) =>{
+        let newValues : ISOEntry = values;
+        // newValues[paraName as keyof ISOEntry] = value;
+
+        (newValues as any)[paraName] = value;
+        handleChange(name, newValues);
+    };
+
+    return(
+        <Table.Row key={name}>
             <Table.RowHeaderCell>
-                {nameAspect}
+                {name}
             </Table.RowHeaderCell>
             <Table.Cell>
-                <Box style={{ position: 'relative', padding: '20px' }}>
-                    <Slider.Root
-                        value={[primary]}
-                        onValueChange={(value) => {setPrimary(value[0])}}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        className="SliderRoot">
-                        <Slider.Track className="SliderTrack">
-                            <Slider.Range className="SliderRange" />
-                        </Slider.Track>
-                        <Slider.Thumb className="SliderThumb" />
-                    </Slider.Root>
-                    <div style={{ position: 'absolute', top: '-2px', left: `${primary * 100}%`, transform: 'translateX(-50%)' }}>
-                        {primary.toFixed(2)}
-                    </div>
-                </Box>
+                <SliderPara
+                    paraName={"primary"}
+                    paraValue={values.primary}
+                    onChange = {onSliderChange}
+                />
             </Table.Cell>
             <Table.Cell>
-                <Box style={{ position: 'relative', padding: '20px' }}>
-                    <Slider.Root
-                        value={[secondaryContent]}
-                        onValueChange={(value) => {setSecondaryContent(value[0])}}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        className="SliderRoot">
-                        <Slider.Track className="SliderTrack">
-                            <Slider.Range className="SliderRange" />
-                        </Slider.Track>
-                        <Slider.Thumb className="SliderThumb" />
-                    </Slider.Root>
-                    <div style={{ position: 'absolute', top: '-2px', left: `${secondaryContent* 100}%`, transform: 'translateX(-50%)' }}>
-                        {secondaryContent.toFixed(2)}
-                    </div>
-                </Box>
+                <SliderPara
+                    paraName={"secondaryContent"}
+                    paraValue={values.secondaryContent}
+                    onChange = {onSliderChange}
+                />
             </Table.Cell>
             <Table.Cell>
-                <Box style={{ position: 'relative', padding: '20px' }}>
-                    <Slider.Root
-                        value={[secondaryMaintainer]}
-                        onValueChange={(value) => {setSecondaryMaintainer(value[0])}}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        className="SliderRoot">
-                        <Slider.Track className="SliderTrack">
-                            <Slider.Range className="SliderRange" />
-                        </Slider.Track>
-                        <Slider.Thumb className="SliderThumb" />
-                    </Slider.Root>
-                    <div style={{ position: 'absolute', top: '-2px', left: `${secondaryMaintainer* 100}%`, transform: 'translateX(-50%)' }}>
-                        {secondaryMaintainer.toFixed(2)}
-                    </div>
-                </Box>
+                <SliderPara
+                    paraName={"secondaryMaintainer"}
+                    paraValue={values.secondaryMaintainer}
+                    onChange = {onSliderChange}
+                />
             </Table.Cell>
             <Table.Cell>
-                <Box style={{ position: 'relative', padding: '20px' }}>
-                    <Slider.Root
-                        value={[indirect]}
-                        onValueChange={(value) => {setIndirect(value[0])}}
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        className="SliderRoot">
-                        <Slider.Track className="SliderTrack">
-                            <Slider.Range className="SliderRange" />
-                        </Slider.Track>
-                        <Slider.Thumb className="SliderThumb" />
-                    </Slider.Root>
-                    <div style={{ position: 'absolute', top: '-2px', left: `${indirect * 100}%`, transform: 'translateX(-50%)' }}>
-                        {indirect.toFixed(2)}
-                    </div>
-                </Box>
+                <SliderPara
+                    paraName={"indirect"}
+                    paraValue={values.indirect}
+                    onChange = {onSliderChange}
+                />
             </Table.Cell>
             <Table.Cell>
-                <MaxValueFinder numbers={[primary, secondaryContent, secondaryMaintainer, indirect]} />
+                {values.maxVal}
             </Table.Cell>
         </Table.Row>
     );
