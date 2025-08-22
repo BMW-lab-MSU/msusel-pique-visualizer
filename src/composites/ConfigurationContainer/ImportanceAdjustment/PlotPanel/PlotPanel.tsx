@@ -126,7 +126,7 @@ export function SensitivityChart(charts : ChartData[], score: number, x_ticks: n
           layout={{
               title: 'Sensitivity',
               height: 500,
-              width: 450,
+              width: 540,
               yaxis: {title: "Score", range:[0,1.1]},
               xaxis: {title: "values", range:[0,1.1]},
               uirevision: 'foo',
@@ -215,7 +215,7 @@ export function recommendationList(impacts : {[key: string]: number}){
   <ol style={{ color: 'black' }}>
     {Object.keys(impacts).map((key) => (
       <li key={key}>
-        {key}: {impacts[key]}
+        {key}: {impacts[key].toFixed(4)}
       </li>
     ))}
   </ol>
