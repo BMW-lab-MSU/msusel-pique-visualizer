@@ -1,5 +1,5 @@
-# To build the image:   docker build -t pique-visualizer-dev .
-# To run the container: docker run -p 5173:5173 pique-visualizer-dev
+# To build the image:   docker build -t pique-tuner-dev .
+# To run the container: docker run -p 5174:5174 pique-tuner-dev
 # Use official Node.js LTS image
 FROM node:18
 
@@ -16,7 +16,7 @@ RUN npm install
 COPY . .
 
 # Expose Vite dev server port
-EXPOSE 5173
+EXPOSE 5174
 
 # Start the app in development mode
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"] 
