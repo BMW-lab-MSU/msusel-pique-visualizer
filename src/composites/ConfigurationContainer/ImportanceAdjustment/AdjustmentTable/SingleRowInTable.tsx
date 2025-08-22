@@ -11,7 +11,11 @@ import * as Slider from '@radix-ui/react-slider';
 import '../../../Style/Slider.css';
 
 import { SliderMode } from './AdjustmentTableUI';
+import {multiply} from "mathjs";
 // import DropdownMenuDemo from './DropDownContainer/DropDownContainer'
+
+
+
 
 interface SingleTableRowProps {
     name: string;
@@ -107,7 +111,8 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
             </Table.Cell>
             <Table.Cell align='center' justify={'center'}>
                 {/*TODO: Imapct calculation recheck*/}
-            !!{Math.max(0, (characteristicSlider - recalculatedWeight)).toFixed(2)}??
+            {/*{Math.max(0, ( multiply( characteristicSlider , recalculatedWeight))).toFixed(2)}*/}
+                {multiply(1- characteristicSlider, recalculatedWeight).toFixed(2)}
             </Table.Cell>
         </Table.Row>
     );
