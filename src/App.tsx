@@ -31,7 +31,7 @@ function App() {
         {/* <TreeDisplayProto />
       </ReactFlowProvider> */}
 
-        <ChatbotUI/>
+        {/*<ChatbotUI/>*/}
     </div>
   );
 }
