@@ -47,6 +47,16 @@ interface ISOEntries {
     [key: string]: ISOEntry;
 }
 
+interface LLMEntry{
+    requirements: string;
+    reasoning: string;
+    value: number;
+}
+
+interface LLMEntries{
+    [key: string]: LLMEntry;
+}
+
 const getInitialNames = (
     definition : schema.base.Schema,
 ): { [key: string]: string } => {
@@ -62,24 +72,38 @@ const getInitialNames = (
     return names;
 };
 
-const setInitialValues =(names:Names):{
-    [key: string]: number } => {
-    let values : Weights= {};
-    Object.keys(names).map(key=> {values[key] = 0;});
-    return values;
-};
+// const setInitialValues =(names:Names):{
+//     [key: string]: number } => {
+//     let values : Weights= {};
+//     Object.keys(names).map(key=> {values[key] = 0;});
+//     return values;
+// };
 
 const setInitialISOValues = (names: Names): {
     [key: string]: ISOEntry} => {
     let entries : ISOEntries = {};
     Object.keys(names).map(key=> {
         let entry: ISOEntry = {
-            indirect: 0,
-            maxVal: 0,
-            notes: "",
             primary: 0,
             secondaryContent: 0,
-            secondaryMaintainer: 0
+            secondaryMaintainer: 0,
+            indirect: 0,
+            maxVal: 0,
+            notes: ""
+        };
+        entries[key] = entry;
+    });
+    return entries;
+};
+
+const setInitialLLMValues = (names: Names): {
+    [key: string]: LLMEntry} => {
+    let entries : LLMEntries = {};
+    Object.keys(names).map(key => {
+        let entry: LLMEntry ={
+            requirements: "",
+            reasoning: "",
+            value: 0
         };
         entries[key] = entry;
     });
@@ -138,8 +162,6 @@ export function ButtonRequirement(mode:string) {
                             <Separator my="3" size="4" />
 
                             {IsoRequirements(mode)}
-                            <Separator my="3" size="4" />
-
 
                             <Separator my="3" size="4" />
 
@@ -257,33 +279,23 @@ export function IsoRequirements(mode:string) {
     // console.log(definition);
 
     const names : Names = getInitialNames(definition);
-    // console.log(names)
-
-    // const [isoImportance, setIsoImportance] = useState<Weights>(setInitialValues(names));
-    // useMemo(() => {
-    //     setImportance(Object.keys(names).map(key=> 0);
-    // }, [names]);
-
-    // const handleIsoImportanceChange =(name: string, newImportance) => {
-    //     setIsoImportance((prev) => ({ ...prev, [name]: newImportance }));
-    // };
 
     const [isoImportance, setIsoImportance] = useState<ISOEntries>(setInitialISOValues(names));
 
 
+
     const handleIsoImportanceChange = (name: string, updatedEntry : ISOEntry)=>{
-        const numbers = [updatedEntry.primary,
+        const numbers = [
+            updatedEntry.primary,
             updatedEntry.secondaryContent,
             updatedEntry.secondaryMaintainer,
-            updatedEntry.indirect];
+            updatedEntry.indirect,
+        ];
 
         let newValues : ISOEntry = updatedEntry;
         newValues.maxVal=   (MaxValue(numbers));
         setIsoImportance((prev) => ({ ...prev, [name]: newValues }));
-
-        console.log(isoImportance);
     };
-
 
 
     const [profileName, setProfileName] = useState<string>("Sample Name");
@@ -439,6 +451,21 @@ export function IsoRequirements(mode:string) {
                                     </HoverCard.Content>
                                 </HoverCard.Root>
                             </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
+                                <Text>Notes </Text>
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger>
+                                        <Link href="#">
+                                            <InfoCircledIcon/>
+                                        </Link>
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content>
+                                        <Text as="div" style={{maxWidth: 325}}>
+                                            Justifications for the values
+                                        </Text>
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Table.ColumnHeaderCell>
                         </Table.Row>
                         <Table.Row align={"center"}>
                             <Table.ColumnHeaderCell justify={"center"}>
@@ -495,6 +522,9 @@ export function IsoRequirements(mode:string) {
                                     </HoverCard.Content>
                                 </HoverCard.Root>
                             </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"}>
+                                <Text>-</Text>
+                            </Table.ColumnHeaderCell>
                         </Table.Row>
                         <Table.Row align={"center"}>
                             <Table.ColumnHeaderCell>
@@ -514,6 +544,9 @@ export function IsoRequirements(mode:string) {
                             </Table.ColumnHeaderCell>
                             <Table.ColumnHeaderCell>
                                 <Text>max()</Text>
+                            </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"}>
+                                <Text>-</Text>
                             </Table.ColumnHeaderCell>
                         </Table.Row>
                     </Table.Header>
@@ -600,19 +633,28 @@ const SliderPara : React.FC<SliderParaProp>= ({paraName , paraValue , onChange})
 }
 
 
-interface SingleRowProp {
+interface SingleISORowProp {
     name: string;
     values: ISOEntry;
     handleChange: (name: string, newImportance: ISOEntry) => void;
 }
 
-const IsoSingleRequirementRow: React.FC<SingleRowProp> = ({name, values, handleChange}) => {
+const IsoSingleRequirementRow: React.FC<SingleISORowProp> = ({name, values, handleChange}) => {
 
     const onSliderChange = (paraName: string, value: number ) =>{
         let newValues : ISOEntry = values;
         // newValues[paraName as keyof ISOEntry] = value;
 
         (newValues as any)[paraName] = value;
+        handleChange(name, newValues);
+    };
+
+    const onNoteChange = (paraName: string, value: string ) =>{
+        let newValues : ISOEntry = values;
+        // newValues[paraName as keyof ISOEntry] = value;
+
+        // (newValues as any)[paraName] = value;
+        newValues.notes  = value
         handleChange(name, newValues);
     };
 
@@ -652,11 +694,21 @@ const IsoSingleRequirementRow: React.FC<SingleRowProp> = ({name, values, handleC
             <Table.Cell>
                 {values.maxVal}
             </Table.Cell>
+            <Table.Cell>
+                <input
+                    className="Input"
+                    type="text"
+                    id= {name+ "note"}
+                    value={values.notes}
+                    // defaultValue="Sample Name"
+                    onChange={e => onNoteChange( "note",e.target.value)}
+                />
+            </Table.Cell>
         </Table.Row>
     );
 }
 
-export function CwrfRequirements(mode:string) {
+export function CwrfRequirements(mode: string) {
 
     const definition = (() => {
         if (mode == "Evaluate") {
@@ -886,6 +938,12 @@ export function CwrfSingleRequirementRow({nameAspect}){
     );
 }
 
+interface Messages {
+  role: string;
+  content: string;
+}
+
+
 export function LlmRequirements(mode:string) {
 
     const definition = (() => {
@@ -906,35 +964,49 @@ export function LlmRequirements(mode:string) {
 
     // Extract keys and initialize with zeros
     // Initialize llmImportance as an object with keys from 'names' and values set to 0
-    const initialLlmImportance = Object.fromEntries(
-        Object.keys(names).map(key => [key, 0])
-    );
-    const [llmImportance, setLlmImportance] = useState<{ [key: string]: number }>(initialLlmImportance);
+
+    const [llmImportance, setLlmImportance] = useState<LLMEntries>(setInitialLLMValues(names));
 
     // Initialize llmRequirements with all keys having an empty string value
-    const initialLlmRequirements = Object.fromEntries(
-        Object.keys(names).map(key => [key, ''])
-    );
-    const [llmRequirements, setLlmRequirements] = useState<{ [key: string]: string }>(initialLlmRequirements);
+    // const initialLlmRequirements = Object.fromEntries(
+    //     Object.keys(names).map(key => [key, ''])
+    // );
+    // const [llmRequirements, setLlmRequirements] = useState<{ [key: string]: string }>(initialLlmRequirements);
 
+    const handleLlmImportanceChange = (name: string, updatedEntry: LLMEntry) => {
+        setLlmImportance((prev) => ({...prev, [name]: updatedEntry}));
+    };
 
-    const handleRequirementChange = (name: string, newValue: string) => {
-        setLlmRequirements((prev) => ({ ...prev, [name]: newValue }));
-    }
+    const setInitialResponse=() =>{
+        let response:Messages = new class implements Messages {
+            role: string ="";
+            content: string ="";
+        }
+        return response
+    };
 
     const [message, setMessage] = useState<string>("");
-    const [response, setResponse] = useState<string>("");
+    const [response, setResponse] = useState<Messages>(setInitialResponse);
+
+    const handleResponseChange = (role: string, content: string) =>{
+        let res:Messages = new class implements Messages {
+            role: string =role;
+            content: string =content;
+        }
+        setResponse(res);
+    };
+
 
     const handleLlmButtonClick = () => {
         const preamble = 'Given the following requirements for each of the quality characteristics for a software product, give a relative score between 1 and 10 for each characteristic. ';
-        const userEntries = Object.entries(llmRequirements)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(', ');
+        const userEntries = Object.keys(llmImportance)
+            .map(key => `${key}: ${llmImportance[key].requirements}`)
+            .join('. \n - ');
         const concatenatedResults = preamble + userEntries;
-        setMessage(concatenatedResults);
+        // setMessage(concatenatedResults);
         console.log( concatenatedResults);
 
-        sendPresetMessage(concatenatedResults, setResponse);
+        sendPresetMessage(concatenatedResults, handleResponseChange);
 
         console.log(response);
     };
@@ -994,16 +1066,30 @@ export function LlmRequirements(mode:string) {
                                     </HoverCard.Content>
                                 </HoverCard.Root>
                             </Table.ColumnHeaderCell>
+                            <Table.ColumnHeaderCell justify={"center"} width={"auto"}>
+                                <Text>Reasoning </Text>
+                                <HoverCard.Root>
+                                    <HoverCard.Trigger>
+                                        <Link href="#">
+                                            <InfoCircledIcon />
+                                        </Link>
+                                    </HoverCard.Trigger>
+                                    <HoverCard.Content>
+                                        <Text as="div" style={{ maxWidth: 325 }}>
+                                            LLM reasoning for each value
+                                        </Text>
+                                    </HoverCard.Content>
+                                </HoverCard.Root>
+                            </Table.ColumnHeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
                         {Object.keys(names).map(idx => (
                             <LlmSingleRequirementRow
                                 key={idx}
-                                name= {idx}
-                                message={llmRequirements[idx]}
-                                onMessageChange={handleRequirementChange}
-                                llmImportance={llmImportance[idx]}
+                                paraName= {names[idx]}
+                                values={llmImportance[idx]}
+                                handleChange={handleLlmImportanceChange}
                             />
                         ))}
                     </Table.Body>
@@ -1012,42 +1098,77 @@ export function LlmRequirements(mode:string) {
             <Box width={"auto"}>
                 <Button size="2" onClick={handleLlmButtonClick} color={"indigo"}> LLM Training </Button>
                 {/*<LlmExtractor/>*/}
+                <Flex direction="column" gap="3">
+                    <Box >
+                            <textarea name={"response"}
+                                      rows={40}
+                                      cols={40}
+                                      value={response.content}
+                                      // onChange={(e) => onChange(paraName,  e.target.value)}
+                                      placeholder="Requirement Description"
+                                // defaultValue={"Not Applicable"}
+                                      id = { "res"}
+                                      disabled
+                            />
+                    </Box>
+                </Flex>
             </Box>
         </Grid>
     );
 }
 
-export function LlmSingleRequirementRow({name , message  , onMessageChange, llmImportance}){
+interface singleRowLlmProp {
+    paraName: string;
+    values: LLMEntry;
+    handleChange: (name: string, newValue: LLMEntry) => void;
+}
+
+const LlmSingleRequirementRow: React.FC<singleRowLlmProp> =({paraName, values, handleChange})=>{
+
+    const onChange = (paraName: string, value: string ) =>{
+        let newValues : LLMEntry = values;
+        newValues.requirements  = value;
+        handleChange(paraName, newValues);
+    };
 
     return(
         <Table.Row>
             <Table.RowHeaderCell>
-                {name}
+                {paraName}
             </Table.RowHeaderCell>
             <Table.Cell>
                     <Flex direction="column" gap="3">
                         <Box >
-                            {/*<TextField.Root>*/}
-                            {/*    <TextField.Input*/}
-                            {/*        value={message}*/}
-                            {/*        onChange={(e) => onMessageChange(name,  e.target.value)}*/}
-                            {/*        placeholder="Requirement Description"*/}
-                            {/*    />*/}
-                            {/*</TextField.Root>*/}
                             <textarea name={"message"}
                                       rows={4}
                                       cols={40}
-                                      value={message}
-                                      onChange={(e) => onMessageChange(name,  e.target.value)}
+                                      value={values.requirements}
+                                      onChange={(e) => onChange(paraName,  e.target.value)}
                                       placeholder="Requirement Description"
                                       // defaultValue={"Not Applicable"}
-                                      id = {name}
+                                      id = {paraName + "req"}
                             />
                         </Box>
                     </Flex>
             </Table.Cell>
             <Table.Cell>
-                {llmImportance}
+                {values.value}
+            </Table.Cell>
+            <Table.Cell>
+                <Flex direction="column" gap="3">
+                    <Box >
+                        <textarea name={"message"}
+                                  rows={4}
+                                  cols={40}
+                                  value={values.reasoning}
+                                  // onChange={(e) => onMessageChange(name,  e.target.value)}
+                                  placeholder="Reasoning Description"
+                            // defaultValue={"Not Applicable"}
+                                  id = {paraName + "response"}
+                                  disabled
+                        />
+                    </Box>
+                </Flex>
             </Table.Cell>
         </Table.Row>
     );
