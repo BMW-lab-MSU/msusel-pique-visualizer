@@ -4,22 +4,22 @@ import '@radix-ui/themes/styles.css';
 import {Cross2Icon, DownloadIcon, InfoCircledIcon, MagicWandIcon, ResetIcon} from "@radix-ui/react-icons";
 import React, {useEffect, useMemo, useState} from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import ProfileSelectionLogic
-    from "../../ConfigurationContainer/ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic.tsx";
-import {
-    AdjustmentTableLogic
-} from "../../ConfigurationContainer/ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic.tsx";
+// import ProfileSelectionLogic
+//     from "../../ConfigurationContainer/ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic.tsx";
+// import {
+//     AdjustmentTableLogic
+// } from "../../ConfigurationContainer/ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic.tsx";
 import {State} from "../../../state.ts";
 import * as Slider from "@radix-ui/react-slider";
 import {Profile} from "../../../types.ts";
 import * as schema from "../../../data/schema.ts";
 import {useAtomValue} from "jotai/index";
 // import {base} from "../../../data/schema.ts";
-import {base} from "../../../data/definitionSchema.ts";
+// import {base} from "../../../data/definitionSchema.ts";
 
 import {LlmExtractor, sendPresetMessage} from "../LLM/LlmExtractor.tsx";
-import {SliderMode} from "../../ConfigurationContainer/ImportanceAdjustment/AdjustmentTable/AdjustmentTableUI.tsx";
-import {values} from "ramda";
+// import {SliderMode} from "../../ConfigurationContainer/ImportanceAdjustment/AdjustmentTable/AdjustmentTableUI.tsx";
+// import {values} from "ramda";
 
 
 interface Names{
@@ -58,7 +58,7 @@ interface LLMEntries{
 }
 
 const getInitialNames = (
-    definition : schema.base.Schema,
+    definition: schema.base.Schema,
 ): { [key: string]: string } => {
     let names : Names= {};
     // console.log(definition)
@@ -71,6 +71,7 @@ const getInitialNames = (
 
     return names;
 };
+
 
 // const setInitialValues =(names:Names):{
 //     [key: string]: number } => {
@@ -110,7 +111,7 @@ const setInitialLLMValues = (names: Names): {
     return entries;
 };
 
-function MaxValueFinder({ numbers }) {
+function MaxValueFinder( numbers ) {
     const maxValue = Math.max(...numbers);
 
     return (
@@ -121,7 +122,7 @@ function MaxValueFinder({ numbers }) {
     // return maxValue;
 }
 
-function MaxValue(numbers){
+function MaxValue(numbers ){
     return Math.max(...numbers);
 }
 
@@ -136,6 +137,17 @@ export function ButtonRequirement(mode:string) {
         setReqImportance(undefined);
     });
 
+    const definition = (() => {
+        if (mode == "Evaluate") {
+            return useAtomValue(State.dataset);
+        } else if (mode == "Derive") {
+            return useAtomValue(State.definition);
+        } else {
+            return null;
+        }
+    }) ();
+
+    const names : Names = getInitialNames(definition);
 
     return (
         <Flex>
@@ -161,7 +173,7 @@ export function ButtonRequirement(mode:string) {
 
                             <Separator my="3" size="4" />
 
-                            {IsoRequirements(mode)}
+                            {IsoRequirements(names)}
 
                             <Separator my="3" size="4" />
 
@@ -201,7 +213,7 @@ export function ButtonRequirement(mode:string) {
                             <Separator my="3" size="4" />
 
 
-                            {CwrfRequirements(mode)}
+                            {CwrfRequirements(names)}
 
                             <Separator my="3" size="4" />
 
@@ -240,7 +252,7 @@ export function ButtonRequirement(mode:string) {
 
                             <Separator my="3" size="4" />
 
-                            {LlmRequirements(mode)}
+                            {LlmRequirements(names)}
 
                             <Separator my="3" size="4" />
 
@@ -263,22 +275,22 @@ export function ButtonRequirement(mode:string) {
 
 
 
-export function IsoRequirements(mode:string) {
+export function IsoRequirements(names:Names) {
 
-    const definition = (() => {
-        if (mode == "Evaluate") {
-            return useAtomValue(State.dataset);
-        } else if (mode == "Derive") {
-            return useAtomValue(State.definition);
-        } else {
-            return null;
-        }
-    }) ();
+    // const definition = (() => {
+    //     if (mode == "Evaluate") {
+    //         return useAtomValue(State.dataset);
+    //     } else if (mode == "Derive") {
+    //         return useAtomValue(State.definition);
+    //     } else {
+    //         return null;
+    //     }
+    // }) ();
     // const definition = useAtomValue(State.definition);
 
     // console.log(definition);
 
-    const names : Names = getInitialNames(definition);
+    // const names : Names = getInitialNames(definition, mode);
 
     const [isoImportance, setIsoImportance] = useState<ISOEntries>(setInitialISOValues(names));
 
@@ -328,7 +340,6 @@ export function IsoRequirements(mode:string) {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
     };
-
 
 
     // TODO: Pass the selected importance to main panel
@@ -708,22 +719,22 @@ const IsoSingleRequirementRow: React.FC<SingleISORowProp> = ({name, values, hand
     );
 }
 
-export function CwrfRequirements(mode: string) {
+export function CwrfRequirements(names: Names) {
 
-    const definition = (() => {
-        if (mode == "Evaluate") {
-            return useAtomValue(State.dataset);
-        } else if (mode == "Derive") {
-            return useAtomValue(State.definition);
-        } else {
-            return null;
-        }
-    }) ();
+    // const definition = (() => {
+    //     if (mode == "Evaluate") {
+    //         return useAtomValue(State.dataset);
+    //     } else if (mode == "Derive") {
+    //         return useAtomValue(State.definition);
+    //     } else {
+    //         return null;
+    //     }
+    // }) ();
     // const definition = useAtomValue(State.definition);
 
     // console.log(definition);
 
-    const names = getInitialNames(definition);
+    // const names = getInitialNames(definition);
     // console.log(names)
 
     const [isoImportance, setIsoImportance] = useState(Object.keys(names).map(key=> names[key]));
@@ -932,7 +943,7 @@ export function CwrfSingleRequirementRow({nameAspect}){
                 </Box>
             </Table.Cell>
             <Table.Cell>
-                <MaxValueFinder numbers={[systemL, applicationL, networkL, enterpriseL]} />
+                {/*<MaxValueFinder numbers={[systemL, applicationL, networkL, enterpriseL]} />*/}
             </Table.Cell>
         </Table.Row>
     );
@@ -944,22 +955,22 @@ interface Messages {
 }
 
 
-export function LlmRequirements(mode:string) {
+export function LlmRequirements(names:Names) {
 
-    const definition = (() => {
-        if (mode == "Evaluate") {
-            return useAtomValue(State.dataset);
-        } else if (mode == "Derive") {
-            return useAtomValue(State.definition);
-        } else {
-            return null;
-        }
-    }) ();
+    // const definition = (() => {
+    //     if (mode == "Evaluate") {
+    //         return useAtomValue(State.dataset);
+    //     } else if (mode == "Derive") {
+    //         return useAtomValue(State.definition);
+    //     } else {
+    //         return null;
+    //     }
+    // }) ();
     // const definition = useAtomValue(State.definition);
 
     // console.log(definition);
 
-    const names = getInitialNames(definition);
+    // const names = getInitialNames(definition);
     // console.log(names)
 
     // Extract keys and initialize with zeros
@@ -985,7 +996,7 @@ export function LlmRequirements(mode:string) {
         return response
     };
 
-    const [message, setMessage] = useState<string>("");
+    // const [message, setMessage] = useState<string>("");
     const [response, setResponse] = useState<Messages>(setInitialResponse);
 
     const handleResponseChange = (role: string, content: string) =>{
