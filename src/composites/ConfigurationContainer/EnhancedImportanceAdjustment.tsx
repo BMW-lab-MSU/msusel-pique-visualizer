@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   Flex,
@@ -11,7 +11,7 @@ import {
   Separator,
   IconButton,
 } from "@radix-ui/themes";
-import {InfoCircledIcon, GearIcon, Cross2Icon, DropdownMenuIcon} from "@radix-ui/react-icons";
+import {InfoCircledIcon, GearIcon, Cross2Icon} from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
 import "../Style/Dialog.css";
 import {ChartData, TabWindow} from "./ImportanceAdjustment/PlotPanel/PlotPanel.tsx";
@@ -20,7 +20,7 @@ import ProfileSelectionLogic from "./ImportanceAdjustment/ProfileSelection/Profi
 import { Profile } from "../../types";
 import {ButtonRequirement} from "../Calibration/Requirements/Requirements.tsx"
 
-const COLORS = ['#41afaa', '#466eb4', '#aa998f', '#e6a532', '#d7642c', '#af4b91'];
+// const COLORS = ['#41afaa', '#466eb4', '#aa998f', '#e6a532', '#d7642c', '#af4b91'];
 const x_tick_amt : number = 0.1;
 const x_tick : number[] = arrayRange(0,1,x_tick_amt);
 
