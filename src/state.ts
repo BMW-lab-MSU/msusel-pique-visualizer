@@ -8,6 +8,7 @@ export function createState() {
   const hideZeroWeightEdgeState = atom<"not-hidding" | "hidding">("not-hidding");
   const hideOneValueNodeState = atom<"not-hidding" | "hidding">("not-hidding");
 
+  // Model definition file
   const definition = atom<schema.base.Schema | undefined>(undefined);
 
 
@@ -30,6 +31,14 @@ export function createState() {
   const adjustedImportance = atom<Record<string, number>>({});
   const originalImportance = atom<Record<string, number>>({});
 
+  // State for importance adjustment
+  const adjustedImportanceSum = atom< number>(1);
+  const originalImportanceSum = atom<number>(1);
+
+  // State for weight adjustment
+  const adjustedWeights = atom<Record<string, number>>({});
+  const originalWeights = atom<Record<string, number>>({});
+
   // State for tqi update based on importance adjustment
   const tqiValue = atom<number | undefined>(undefined);
   const originalTqiValue = atom<number | undefined>(undefined);
@@ -46,8 +55,12 @@ export function createState() {
     minWeightState,
     maxWeightState,
     adjustedImportance,
+    adjustedImportanceSum,
+    adjustedWeights,
     tqiValue,
     originalImportance,
+    originalImportanceSum,
+    originalWeights,
     originalTqiValue,
     definition
   };
