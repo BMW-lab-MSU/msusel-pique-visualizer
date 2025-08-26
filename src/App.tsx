@@ -1,20 +1,19 @@
-import { useState } from "react";
-import { FileUploader } from "./composites/FileUploader";
-import { useAtom, useAtomValue } from "jotai";
+// import { FileUploader } from "./composites/FileUploader";
+import { useAtomValue } from "jotai";
 import { State } from "./state";
 import * as R from "ramda";
-import { Wrapper } from "./Wrapper";
+// import { Wrapper } from "./Wrapper";
 import { DefinitionWrapper} from "./DefinitionWrapper.tsx";
-import { Box } from "@radix-ui/themes";
-import { TreeDisplayProto } from "./composites/TreeDisplayProto/TreeDisplayProto";
-import { ReactFlowProvider } from "reactflow";
-
-import  {ChatbotUI} from "./composites/Calibration/LLM/LlmExtractor.tsx"
+// import { Box } from "@radix-ui/themes";
+// import { TreeDisplayProto } from "./composites/TreeDisplayProto/TreeDisplayProto";
+// import { ReactFlowProvider } from "reactflow";
+//
+// import  {ChatbotUI} from "./composites/Calibration/LLM/LlmExtractor.tsx"
 
 import {DefinitionUploader} from "./composites/Calibration/DefinitionUploader/DefinitionUploader.tsx";
 
 function App() {
-  const dataset = useAtomValue(State.dataset);
+  // const dataset = useAtomValue(State.dataset);
   const definition =useAtomValue(State.definition);
 
   return (
@@ -25,7 +24,7 @@ function App() {
       }}
     >
         {R.isNil(definition) ? <DefinitionUploader /> : <DefinitionWrapper />}
-        {R.isNil(dataset) ? <FileUploader /> : <Wrapper />}
+        {/*{R.isNil(dataset) ? <FileUploader /> : <Wrapper />}*/}
 
       {/* <ReactFlowProvider> */}
         {/* <TreeDisplayProto />

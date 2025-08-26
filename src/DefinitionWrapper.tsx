@@ -20,8 +20,8 @@ import { ListSelect} from "./composites/Calibration/ListSelect/ListSelect.tsx";
 // import { EnhancedImportanceAdjustment } from "./composites/ConfigurationContainer/EnhancedImportanceAdjustment.tsx";
 
 import {CalibrationOverview} from "./composites/Calibration/Overview/CalibrationOverview.tsx";
-//
-// import { ConfigurationContainer } from "./composites/ConfigurationContainer/ConfigurationContainer";
+
+import { ConfigurationContainer } from "./composites/ConfigurationContainer/ConfigurationContainer";
 //
 // import { ImportanceAdjustment} from "./composites/ConfigurationContainer/ImportanceAdjustment.tsx";
 import {AdjustmentTableLogic
@@ -354,7 +354,7 @@ export const DefinitionWrapper = () => {
                                         selectedProfile={selectedProfile}
                                     />
                                     <Separator my="3" size="4" />
-                                    <Box>
+                                    <Box width={"100%"}>
                                         <Text color='brown'>
                                             {" Requirement Standards"}
                                         </Text>
@@ -449,7 +449,7 @@ export const DefinitionWrapper = () => {
                             }}
                         >
                             Config
-                            {/*<ConfigurationContainer />*/}
+                            <ConfigurationContainer />
 
                         </Flex>
                     )}
