@@ -42,7 +42,7 @@ const ProfileSelectionLogic: React.FC<ProfileSelectionLogicProps> = ({
       try {
         const profiles: Profile = JSON.parse(e.target?.result as string);
         onProfileChange([profiles]);
-        setIsApplyButtonActive(false);
+        setIsApplyButtonActive(true);
         setUploadedFile(null);
       } catch (error) {
         console.error("Error parsing the uploaded file", error);

@@ -37,7 +37,7 @@ const ProfileSelectionUI: React.FC<ProfileSelectionUIProps> = ({
           </Box>
           <Box>
             <Select.Root
-              onValueChange={handleProfileChange}
+              onValueChange={e => handleProfileChange(e)}
               value={selectValue}
             >
               <Select.Trigger aria-label="Profile" className="trigger">
