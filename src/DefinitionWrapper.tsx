@@ -1,41 +1,40 @@
-import { useAtomValue } from "jotai";
-import React, {useEffect, useState} from "react";
-import { State } from "./state";
-import {Box, IconButton, Tabs, Flex, Heading, Text, Button, Separator} from "@radix-ui/themes";
+// import { useAtomValue } from "jotai";
+import {useEffect, useState} from "react";
+// import { State } from "./state";
+import {Box, IconButton, Tabs, Flex, Heading, Text, Separator} from "@radix-ui/themes";
 import {
     GearIcon,
     PinLeftIcon,
     PinRightIcon,
-    HamburgerMenuIcon,
 } from "@radix-ui/react-icons";
-import { useProcessedData } from "./data/useProcessedData";
-import { useProcessedDefinitionData} from "./data/useProcessedDefinition.tsx";
-
-import { ButtonContainer } from "./composites/FeaturesContainer/ButtonContainer";
-
-import { OverviewTab } from "./composites/Overview/OverviewTab";
-import { LegendContainer } from "./composites/LegendContainer/Legend";
-import { TreeDisplay } from "./composites/TreeDisplay/TreeDisplay";
-import { ListDisplay } from "./composites/ListDisplay/ListDisplay";
+// import { useProcessedData } from "./data/useProcessedData";
+// import { useProcessedDefinitionData} from "./data/useProcessedDefinition.tsx";
+//
+// import { ButtonContainer } from "./composites/FeaturesContainer/ButtonContainer";
+//
+// import { OverviewTab } from "./composites/Overview/OverviewTab";
+// import { LegendContainer } from "./composites/LegendContainer/Legend";
+// import { TreeDisplay } from "./composites/TreeDisplay/TreeDisplay";
+// import { ListDisplay } from "./composites/ListDisplay/ListDisplay";
 import { ListSelect} from "./composites/Calibration/ListSelect/ListSelect.tsx";
-import { EnhancedImportanceAdjustment } from "./composites/ConfigurationContainer/EnhancedImportanceAdjustment.tsx";
+// import { EnhancedImportanceAdjustment } from "./composites/ConfigurationContainer/EnhancedImportanceAdjustment.tsx";
 
 import {CalibrationOverview} from "./composites/Calibration/Overview/CalibrationOverview.tsx";
-
-import { ConfigurationContainer } from "./composites/ConfigurationContainer/ConfigurationContainer";
-
-import { ImportanceAdjustment} from "./composites/ConfigurationContainer/ImportanceAdjustment.tsx";
+//
+// import { ConfigurationContainer } from "./composites/ConfigurationContainer/ConfigurationContainer";
+//
+// import { ImportanceAdjustment} from "./composites/ConfigurationContainer/ImportanceAdjustment.tsx";
 import {AdjustmentTableLogic
 } from "./composites/ConfigurationContainer/ImportanceAdjustment/AdjustmentTable/AdjustmentTableLogic.tsx";
 import ProfileSelectionLogic
     from "./composites/ConfigurationContainer/ImportanceAdjustment/ProfileSelection/ProfileSelectionLogic.tsx";
 import {Profile} from "./types.ts";
 
-import {Requirements, ButtonRequirement} from "./composites/Calibration/Requirements/Requirements.tsx";
-import {Tab} from "@chakra-ui/react";
+import {ButtonRequirement} from "./composites/Calibration/Requirements/Requirements.tsx";
+// import {Tab} from "@chakra-ui/react";
 import {WeightMatrix} from "./composites/Calibration/WeightMatrix/WeightMatrix.tsx";
 import {ChartData, TabWindow} from "./composites/ConfigurationContainer/ImportanceAdjustment/PlotPanel/PlotPanel.tsx";
-import * as Dialog from "@radix-ui/react-dialog";
+// import * as Dialog from "@radix-ui/react-dialog";
 
 export const DefinitionWrapper = () => {
     // const definition = useAtomValue(State.definition);
@@ -112,21 +111,22 @@ export const DefinitionWrapper = () => {
     // const processedData = useProcessedDefinitionData();
     // if (!processedData) return null;
 
-    const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(true);
-    // const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+    const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
+    const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
 
     const leftSidebarWidthExpanded = "25vw"; // 20% of the viewport width
-    // const rightSidebarWidthExpanded = "30vw"; // 20% of the viewport width
+    const rightSidebarWidthExpanded = "30vw"; // 20% of the viewport width
     const sidebarWidthCollapsed = "50px";
 
     const leftWidth = isLeftSidebarOpen
         ? leftSidebarWidthExpanded
         : sidebarWidthCollapsed;
-    // const rightWidth = isRightSidebarOpen
-    //     ? rightSidebarWidthExpanded
-    //     : sidebarWidthCollapsed;
-    // const middleWidth = `calc(100vw - (${leftWidth} + ${rightWidth}))`;
-    const middleWidth = `calc(100vw - (${leftWidth})`;
+    const rightWidth = isRightSidebarOpen
+        ? rightSidebarWidthExpanded
+        : sidebarWidthCollapsed;
+    const middleWidth = `calc(100vw - (${leftWidth} + ${rightWidth}))`;
+    // const middleWidth = `calc(100vw - (${leftWidth}))`;
+    // const middleWidth = `100vw`;
 
 
     const updatedTQIRaw : number =
@@ -250,50 +250,50 @@ export const DefinitionWrapper = () => {
                     overflowX: "hidden",
                 }}
             >
-                {/* Left Side Panel */}
-                {/*<Flex*/}
-                {/*    direction="column"*/}
-                {/*    style={{*/}
-                {/*        width: isLeftSidebarOpen ? leftWidth : "50px",*/}
-                {/*        transition: "width 0.3s ease-in-out",*/}
-                {/*        position: "relative",*/}
-                {/*        flexShrink: 0,*/}
-                {/*        overflow: "hidden",*/}
-                {/*        height: "100%",*/}
-                {/*    }}*/}
-                {/*>*/}
-                {/*    /!* Toggle Button for Sidebar, PinLeftIcon for open, PinRightIcon for close *!/*/}
-                {/*    <IconButton*/}
-                {/*        size="3"*/}
-                {/*        variant="soft"*/}
-                {/*        style={{*/}
-                {/*            position: "absolute",*/}
-                {/*            top: "10px",*/}
-                {/*            right: isLeftSidebarOpen ? "10px" : "0px",*/}
-                {/*            zIndex: 2,*/}
-                {/*            transition: "right 0.3s ease-in-out",*/}
-                {/*        }}*/}
-                {/*        onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}*/}
-                {/*    >*/}
-                {/*        {isLeftSidebarOpen ? <PinLeftIcon /> : <PinRightIcon />}*/}
-                {/*    </IconButton>*/}
+                 {/*Left Side Panel*/}
+                <Flex
+                    direction="column"
+                    style={{
+                        width: isLeftSidebarOpen ? leftWidth : "50px",
+                        transition: "width 0.3s ease-in-out",
+                        position: "relative",
+                        flexShrink: 0,
+                        overflow: "hidden",
+                        height: "100%",
+                    }}
+                >
+                    {/* Toggle Button for Sidebar, PinLeftIcon for open, PinRightIcon for close */}
+                    <IconButton
+                        size="3"
+                        variant="soft"
+                        style={{
+                            position: "absolute",
+                            top: "10px",
+                            right: isLeftSidebarOpen ? "10px" : "0px",
+                            zIndex: 2,
+                            transition: "right 0.3s ease-in-out",
+                        }}
+                        onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}
+                    >
+                        {isLeftSidebarOpen ? <PinLeftIcon /> : <PinRightIcon />}
+                    </IconButton>
 
-                {/*    /!* Sidebar Content *!/*/}
-                {/*    {isLeftSidebarOpen && (*/}
-                {/*        <Flex*/}
-                {/*            style={{*/}
-                {/*                flexDirection: "column",*/}
-                {/*                padding: "10px",*/}
-                {/*                height: "100%",*/}
-                {/*                overflowY: "auto",*/}
-                {/*                paddingRight: "50px",*/}
-                {/*            }}*/}
-                {/*        >*/}
-                {/*            /!*<ButtonRequirement />*!/*/}
-                {/*            /!*<ButtonContainer />*!/*/}
-                {/*        </Flex>*/}
-                {/*    )}*/}
-                {/*</Flex>*/}
+                    {/* Sidebar Content */}
+                    {isLeftSidebarOpen && (
+                        <Flex
+                            style={{
+                                flexDirection: "column",
+                                padding: "10px",
+                                height: "100%",
+                                overflowY: "auto",
+                                paddingRight: "50px",
+                            }}
+                        >
+                            {/*<ButtonRequirement />*/}
+                            {/*<ButtonContainer />*/}
+                        </Flex>
+                    )}
+                </Flex>
 
                 {/* Middle Majority Content */}
                 <Flex
@@ -331,18 +331,24 @@ export const DefinitionWrapper = () => {
                         </Tabs.List>
 
                         {/* Tab Content with Overflow Handling */}
+                        <Flex>
                         <Box
                             style={{
                                 height: "100%", // Ensures the tab content takes full height of its container
                                 overflow: "auto", // Allows scrolling within the tab content if it exceeds the container's height
                             }}
                         >
-                            <Tabs.Content value="Adjustments">
+                            <Tabs.Content value="Adjustments" style={{
+                                display: "grid",
+                                gridTemplateRows: "auto 1fr auto",
+                                gridTemplateColumns: "60% 40%",
+                                gap: "8px",
+                            }}>
 
                                 {/*<Separator my="3" size="4" style={{ gridColumn: "span 2" }} />*/}
 
                                 {/* Middle-left block: ProfileSelectionLogic and AdjustmentTableLogic */}
-                                <Box >
+                                <Box style={{ gridColumn: "span 2" }} >
                                     <ProfileSelectionLogic
                                         onProfileChange={handleProfileApply}
                                         selectedProfile={selectedProfile}
@@ -356,7 +362,7 @@ export const DefinitionWrapper = () => {
                                     </Box>
                                 </Box>
                                 <Separator my="3" size="4" style={{ gridColumn: "span 2" }} />
-                                <Flex>
+                                {/*<Flex>*/}
                                     <Box style={{ gridRow: "2", gridColumn: "1" }}>
                                         <AdjustmentTableLogic
                                             selectedProfile={
@@ -375,7 +381,7 @@ export const DefinitionWrapper = () => {
                                     <Box style={{ gridRow: "2", gridColumn: "2" }}>
                                         {TabWindow(pieData, chartData, updatedTQIRaw, x_tick, 1.0, strategy, setStrategy, strategyValues)}
                                     </Box>
-                                </Flex>
+                                {/*</Flex>*/}
                             </Tabs.Content>
 
                             <Tabs.Content value="tree">
@@ -393,58 +399,61 @@ export const DefinitionWrapper = () => {
                                 LLM Training
                             </Tabs.Content>
                         </Box>
+                        </Flex>
                     </Tabs.Root>
                 </Flex>
 
-                {/* Right Configuration Bar */}
-                {/*<Flex*/}
-                {/*    direction="column"*/}
-                {/*    style={{*/}
-                {/*        width: isRightSidebarOpen ? rightWidth : "50px",*/}
-                {/*        height: "100vh", // instead of 100%*/}
-                {/*        position: "fixed", //relative*/}
-                {/*        top: "0",*/}
-                {/*        right: "0",*/}
-                {/*        transition: "width 0.3s ease-in-out",*/}
-                {/*        zIndex: 1050,*/}
-                {/*        // flexShrink: 0,*/}
-                {/*        overflow: "hidden",*/}
-                {/*    }}*/}
-                {/*>*/}
-                {/*    /!* GearIcon to toggle the sidebar *!/*/}
-                {/*    /!* Position to the left when sidebar is open, and keep on the right when closed *!/*/}
-                {/*    <IconButton*/}
-                {/*        size="3"*/}
-                {/*        variant="soft"*/}
-                {/*        style={{*/}
-                {/*            position: "absolute",*/}
-                {/*            top: "10px",*/}
-                {/*            left: isRightSidebarOpen ? "10px" : "0px",*/}
-                {/*            // right: isRightSidebarOpen ? 'calc(100% - 40px)' : '10px',*/}
-                {/*            zIndex: 1050,*/}
-                {/*            transition: "right 0.3s ease-in-out", //left*/}
-                {/*        }}*/}
-                {/*        onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}*/}
-                {/*    >*/}
-                {/*        <GearIcon />*/}
-                {/*    </IconButton>*/}
+                 {/*Right Configuration Bar*/}
+                <Flex
+                    direction="column"
+                    style={{
+                        width: isRightSidebarOpen ? rightWidth : "50px",
+                        height: "100vh", // instead of 100%
+                        position: "fixed", //relative
+                        top: "0",
+                        right: "0",
+                        transition: "width 0.3s ease-in-out",
+                        zIndex: 1050,
+                        // flexShrink: 0,
+                        overflow: "hidden",
+                    }}
+                >
+                    {/* GearIcon to toggle the sidebar */}
+                    {/* Position to the left when sidebar is open, and keep on the right when closed */}
+                    <IconButton
+                        size="3"
+                        variant="soft"
+                        style={{
+                            position: "absolute",
+                            top: "10px",
+                            left: isRightSidebarOpen ? "10px" : "0px",
+                            // right: isRightSidebarOpen ? 'calc(100% - 40px)' : '10px',
+                            zIndex: 1050,
+                            transition: "right 0.3s ease-in-out", //left
+                        }}
+                        onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
+                    >
+                        <GearIcon />
+                    </IconButton>
 
-                {/*    /!* Right Sidebar Content *!/*/}
-                {/*    {isRightSidebarOpen && (*/}
-                {/*        <Flex*/}
-                {/*            style={{*/}
-                {/*                flexDirection: "column",*/}
-                {/*                padding: "10px",*/}
-                {/*                height: "100%",*/}
-                {/*                overflowY: "auto",*/}
-                {/*                paddingLeft: "50px",*/}
-                {/*                zIndex: 1040,*/}
-                {/*            }}*/}
-                {/*        >*/}
-                {/*            <ConfigurationContainer />*/}
-                {/*        </Flex>*/}
-                {/*    )}*/}
-                {/*</Flex>*/}
+                    {/* Right Sidebar Content */}
+                    {isRightSidebarOpen && (
+                        <Flex
+                            style={{
+                                flexDirection: "column",
+                                padding: "10px",
+                                height: "100%",
+                                overflowY: "auto",
+                                paddingLeft: "50px",
+                                zIndex: 1040,
+                            }}
+                        >
+                            Config
+                            {/*<ConfigurationContainer />*/}
+
+                        </Flex>
+                    )}
+                </Flex>
             </div>
         </div>
     );
