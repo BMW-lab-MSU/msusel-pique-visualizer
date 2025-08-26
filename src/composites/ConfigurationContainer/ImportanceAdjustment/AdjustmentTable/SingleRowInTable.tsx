@@ -19,7 +19,6 @@ import {multiply} from "mathjs";
 
 interface SingleTableRowProps {
     name: string;
-    // qualityAspectValue: number;
     qualityAspectDescription: string;
     characteristicValue: number;
     characteristicSlider: number;
@@ -27,13 +26,11 @@ interface SingleTableRowProps {
     importanceSlider: number;
     recalculatedWeight: number;
     onSliderChange: (name: string, newImportance: number, mode : SliderMode) => void;
-    // onNodeValueChange: (name: string, newNOdeValue: number) => void;
     mode: string;
 }
 
 const SingleTableRow: React.FC<SingleTableRowProps> = ({
     name,
-    // qualityAspectValue,
     qualityAspectDescription,
     characteristicValue,
     characteristicSlider,
@@ -41,7 +38,6 @@ const SingleTableRow: React.FC<SingleTableRowProps> = ({
     importanceSlider,
     recalculatedWeight,
     onSliderChange,
-    // onNodeValueChange,
     mode,
 }) => {
 
