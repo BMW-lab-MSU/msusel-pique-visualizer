@@ -26,6 +26,7 @@ export const DefinitionUploader = () => {
     const setDefinition = useSetAtom(State.definition)
     const setDataset = useSetAtom(State.dataset);
     const setAdjustedImportance = useSetAtom(State.adjustedImportance);
+    const setAdjustedWeights = useSetAtom(State.adjustedWeights);
     const setTqiValue = useSetAtom(State.tqiValue);
 
     const [originalTqiValue, setOriginalTqiValue] = useAtom(
@@ -33,6 +34,9 @@ export const DefinitionUploader = () => {
     );
     const [originalImportance, setOriginalImportance] = useAtom(
         State.originalImportance
+    );
+    const [originalWeights, setOriginalWeights] = useAtom(
+        State.originalWeights
     );
 
     const [fileName, setFileName] = useState("");
@@ -100,10 +104,12 @@ export const DefinitionUploader = () => {
                             if (firstTqiObj) {
                                  // set the initial value for adjustments of tqi and importance
                                  setAdjustedImportance(firstTqiObj.weights);
+                                 setAdjustedWeights(firstTqiObj.weights);
                                  setTqiValue(firstTqiObj.value);
                                  // set the initial tqi and importance for the use of reset
                                  setOriginalTqiValue(firstTqiObj.value);
                                  setOriginalImportance(firstTqiObj.weights);
+                                 setOriginalWeights(firstTqiObj.weights);
                             }
                         } else {
                             const details = JSON.stringify(
@@ -155,10 +161,10 @@ export const DefinitionUploader = () => {
         >
             <div style={{ display: "flex", alignItems: "center" }}>
                 <img
-                    // src="https://www.cisa.gov/profiles/cisad8_gov/themes/custom/gesso/dist/images/backgrounds/6fdaa25709d28dfb5cca.svg"
-                    // alt="CISA Logo"
-                    src="https://www.dhs.gov/sites/default/files/2023-03/ST_RGB_Hor_Blue_at20.svg"
-                    alt="Science and Technology Directorate"
+                    src="https://www.cisa.gov/profiles/cisad8_gov/themes/custom/gesso/dist/images/backgrounds/6fdaa25709d28dfb5cca.svg"
+                    alt="CISA Logo"
+                    // src="https://www.dhs.gov/sites/default/files/2023-03/ST_RGB_Hor_Blue_at20.svg"
+                    // alt="Science and Technology Directorate"
                     width="100"
                     height="100"
                     style={{ marginRight: "20px" }}
