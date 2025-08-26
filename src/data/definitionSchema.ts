@@ -67,10 +67,7 @@ const normalizerNewStructure = z.object({
 });
 
 // Normalizer schema: define 2 versions to accept both the old (only a string) and new (a nested structure) format
-const normalizerSchema = z.union([
-    z.string(),
-    normalizerNewStructure,
-]);
+const normalizerSchema = z.union([z.string(), normalizerNewStructure]);
 
 export namespace base {
     /**
@@ -90,7 +87,13 @@ export namespace base {
      * }
      */
     export const factorSingle = z.object({
+        name: z.string(),
+        value: z.number(),
+        eval_strategy: evalStrategySchema, //z.string(),
+        normalizer: normalizerSchema, //z.string(),
+        utility_function: utilityFunctionSchema,
         description: z.string(),
+        weights: z.record(z.string(), z.number()),
     });
 
     /**
@@ -111,10 +114,14 @@ export namespace base {
 
     export const measureSingle = z.object({
         name: z.string(),
-        positive: z.boolean(),
-        weakness_abstraction: z.string(),
         description: z.string(),
-        children: z.record(z.string(), z.number()),
+        eval_strategy: evalStrategySchema, //z.string(),
+        normalizer: normalizerSchema, //z.string(),
+        positive: z.boolean(),
+        thresholds: z.array(z.number()),
+        utility_function: utilityFunctionSchema,
+        value: z.number(),
+        weights: z.record(z.string(), z.number()),
     });
 
     /**
@@ -129,8 +136,14 @@ export namespace base {
      */
 
     export const diagnosticsSingle = z.object({
-        toolName: z.string(),
         description: z.string(),
+        eval_strategy: evalStrategySchema, //z.string(),
+        name: z.string(),
+        normalizer: normalizerSchema, //z.string(),
+        toolName: z.string(),
+        utility_function: utilityFunctionSchema,
+        value: z.number(),
+        weights: z.record(z.string(), z.number()),
     });
 
     // The overall schema for the dataset```typescript
@@ -150,7 +163,9 @@ export namespace base {
      */
 
     export const definition = z.object({
+        name: z.string(),
         global_config: z.record(z.any()),
+        additionalData: z.record(z.any()),
         factors: z.record(z.record(z.any())),
         measures: z.record(z.any()),
         diagnostics: z.record(diagnosticsSingle),
