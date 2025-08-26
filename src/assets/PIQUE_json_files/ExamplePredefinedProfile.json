@@ -1,7 +1,24 @@
 [
   {
     "type": "option1",
+    "importanceSum": 2,
     "importance": {
+      "Availability": 1,
+      "Authenticity": 0.02,
+      "Authorization": 0.08,
+      "Confidentiality": 0.23,
+      "Non-repudiation": 0.12,
+      "Integrity": 0.05
+    },
+    "weights": {
+      "Availability": 0.6,
+      "Authenticity": 0.02,
+      "Authorization": 0.08,
+      "Confidentiality": 0.23,
+      "Non-repudiation": 0.12,
+      "Integrity": 0.05
+    },
+    "characteristic": {
       "Availability": 0.5,
       "Authenticity": 0.02,
       "Authorization": 0.08,
@@ -12,13 +29,30 @@
   },
   {
     "type": "option2",
+    "importanceSum": 2,
     "importance": {
-      "Availability": 0.2,
+      "Availability": 0.9,
       "Authenticity": 0.2,
       "Authorization": 0.1,
       "Confidentiality": 0.3,
       "Non-repudiation": 0.1,
       "Integrity": 0.1
+    },
+    "weights": {
+      "Availability": 0.3,
+      "Authenticity": 0.2,
+      "Authorization": 0.1,
+      "Confidentiality": 0.3,
+      "Non-repudiation": 0.1,
+      "Integrity": 0.1
+    },
+    "characteristic": {
+      "Availability": 0.9,
+      "Authenticity": 0.02,
+      "Authorization": 0.08,
+      "Confidentiality": 0.23,
+      "Non-repudiation": 0.12,
+      "Integrity": 0.05
     }
   }
 ]
