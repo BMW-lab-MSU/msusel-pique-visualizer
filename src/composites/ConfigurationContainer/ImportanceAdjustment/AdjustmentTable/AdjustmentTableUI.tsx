@@ -82,12 +82,14 @@ export const AdjustmentTableUI: React.FC<AdjustmentTableUIProps> = ({
   // to apply the customized importance
   const [_, setTqiValue] = useAtom(State.tqiValue);
   const [__, setAdjustedImportance] = useAtom(State.adjustedImportance);
+  const [___, setAdjustedWeights]= useAtom(State.adjustedWeights);
   // const [___, setAdjustedCharacteristic] = useState(dataset.factors.quality_aspects);
 
   const handleApply = () => {
     console.log('dataset factors: ', dataset.factors);
     setTqiValue(updatedTQI); // Set tqiValue as updatedTQI
-    setAdjustedImportance(recalculatedWeights); // Set adjustedImportance as recalculatedWeights
+    setAdjustedImportance(importanceValues); // Set adjustedImportance as recalculatedWeights
+    setAdjustedWeights(recalculatedWeights);
 
     // update each QA char value
     // TODO: Should the changes in char values be saved
